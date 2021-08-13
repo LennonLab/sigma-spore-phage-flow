@@ -326,3 +326,52 @@ d%>%
 
 p
 ```
+
+
+# ms plot
+
+```{r, echo=FALSE}
+p <- 
+d%>%
+   mutate(rep.group=interaction(strain, treat,colony,exp))%>%
+   left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
+   filter(!outlier)%>%
+   select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
+   mutate(strain = fct_relevel(strain,"pDR110","sigF", "sigG","Goe3","ELDg168","SP10", "ELDg169"))%>%
+   mutate(perc.spore=spore.ml/(veg.ml+spore.ml))%>%
+   group_by(strain, treat,colony,exp)%>%
+   summarise(perc.spore=mean(perc.spore))%>%
+   pivot_wider(names_from = treat, values_from = perc.spore)%>%
+   mutate(induction.ratio.log=log10(IPTG/noIPTG))%>%
+   ungroup()%>%
+   mutate(exp=as_factor(exp))%>%
+   mutate(grp=case_when(strain == "pDR110" ~ "neg.ctrl",
+                        strain %in% c("sigF","sigG") ~ "host",
+                        TRUE ~ "phage"))%>%
+   
+   ggplot(aes(x=strain, y=induction.ratio.log))+
+      stat_summary(geom = "col", fun = mean, position = position_dodge(width = 0.8), fill="grey", color="black") +
+         stat_summary(geom = "errorbar", fun.data = mean_se, position = position_dodge(width = 0.8), size=1, width=0.2)+
+         geom_point(aes(group=interaction(colony,exp), shape=exp), ,position = position_jitterdodge(jitter.width = NULL, jitter.height = 0,
+  dodge.width = 0.3), size=2)+
+   
+   facet_grid(.~grp, scales = "free_x", space = "free_x")+
+
+   ylab("log ( IPTG/noIPTG )")+
+   theme_classic(base_size = 14)+
+   panel_border(color="black")+
+   ggtitle("Response to induction %spores (mean±SE)")+
+   scale_shape_manual(values = c(21:25))+
+   theme(axis.text.x = element_text(angle = 45, hjust = 1),
+         legend.position = "bottom")
+
+# # ggsave("induction_response_perc.pdf",p)
+# library (officer)
+# library(rvg)
+# read_pptx() %>%
+#   add_slide(layout = "Two Content", master = "Office Theme") %>%
+#   ph_with(dml(ggobj = p), location = ph_location_type(type = "body")) %>%
+#   print(target = "plot.pptx")
+p
+
+```
