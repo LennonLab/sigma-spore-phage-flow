@@ -12,6 +12,8 @@ library(here)
 library(tidyverse, quietly = TRUE)
 library(cowplot, quietly = TRUE)
 library(outliers, quietly = TRUE)
+library(broom)
+library(gtools)
 ```
 
 
@@ -265,7 +267,26 @@ d.sum <- d%>%
 ```{r}
 summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
    
-   pairwise.t.test(d.sum$induction.ratio.log, d.sum$strain, p.adjust.method = "BH")
+
+   d.test <- tibble()
+# t-tests against control
+   for (s in unique(d.sum$strain)){
+      if (s =="pDR110") next
+      d.test <-d.sum %>% 
+         filter(strain == s |strain =="pDR110") %>% 
+         t.test(induction.ratio.log ~ strain, data = .) %>% 
+         broom::tidy() %>% 
+         mutate(strain = s) %>% 
+         bind_rows(d.test, .)
+   }
+   
+# adjust p-value for multiple testing
+   d.test <- d.test %>% 
+      mutate(adj.p = p.adjust(p.value, method = "BH"),
+             p.lab = stars.pval(adj.p)) %>% 
+      relocate(strain, p.value, adj.p, p.lab)
+   
+   knitr::kable(d.test, format = "html")
 ```
 
 
