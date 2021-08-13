@@ -1,3 +1,8 @@
+# data and analysis products
+data/FCM/*
+fig/gate_plots/*
+data/cluster_models/*exp*
+
 # History files
 .Rhistory
 .Rapp.history

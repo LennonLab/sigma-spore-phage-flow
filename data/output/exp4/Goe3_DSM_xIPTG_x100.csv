@@ -1,0 +1,4 @@
+strain,media,treat,dilution,well,colony,rep,xt,num,exp,total.events,volume.nL,limit.events,limit.volume.uL,singlets,neg.rmv,noise.cutoff,noisy.events,clean.events,clust.model,spore,veg,spore.ml,veg.ml
+Goe3,DSM,xIPTG,x100,H7,H7,fcs,1,"NA",exp4,50000,19201,50000,30,48095,125,9.277614686809887,47970,43670,new for  Goe3_exp4,18912,24758,98494870.05885111,128941200.97911568
+Goe3,DSM,xIPTG,x100,H8,H8,fcs,1,"NA",exp4,50000,20691,50000,30,48700,214,8.580533975303588,48486,42046,new for  Goe3_exp4,13427,28619,64892948.625006035,138316176.11521918
+Goe3,DSM,xIPTG,x100,H9,H9,fcs,1,"NA",exp4,50000,19225,50000,30,48316,167,9.279405719002577,48149,44408,new for  Goe3_exp4,24006,20402,124868660.59817946,106122236.6710013

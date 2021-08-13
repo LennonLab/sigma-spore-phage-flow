@@ -1,0 +1,4 @@
+strain,media,treat,dilution,well,colony,rep,xt,num,exp,total.events,volume.nL,limit.events,limit.volume.uL,singlets,neg.rmv,noise.cutoff,noisy.events,clean.events,clust.model,spore,veg,spore.ml,veg.ml
+Goe3,DSM,IPTG,x100,H1,COL1,a,fcs,1,exp3,50000,19751,50000,30,48736,626,8.153836716589554,48110,43441,data/cluster_models/Goe3_exp3_cluster_model.Rdata,5374,38067,27208748.924105108,192734545.08632472
+Goe3,DSM,IPTG,x100,H2,COL1,b,fcs,1,exp3,50000,18845,50000,30,49001,396,8.244664478312185,48605,43603,data/cluster_models/Goe3_exp3_cluster_model.Rdata,3144,40459,16683470.416556114,214693552.66648978
+Goe3,DSM,IPTG,x100,H3,COL1,c,fcs,1,exp3,50000,19834,50000,30,49336,397,8.072685935666273,48939,44539,data/cluster_models/Goe3_exp3_cluster_model.Rdata,4336,40203,21861450.03529293,202697388.32308155

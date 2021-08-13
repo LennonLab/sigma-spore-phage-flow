@@ -1,0 +1,4 @@
+strain,media,treat,dilution,well,colony,rep,xt,num,exp,total.events,volume.nL,limit.events,limit.volume.uL,singlets,neg.rmv,noise.cutoff,noisy.events,clean.events,clust.model,spore,veg,spore.ml,veg.ml
+pDR110,DSM,xIPTG,x100,F7,COL1,a,fcs,1,exp3,30794,30000,50000,30,29449,164,9.510732023232471,29285,26681,new for  pDR110_exp3,19523,7158,65076666.66666667,23860000
+pDR110,DSM,xIPTG,x100,F8,COL1,b,fcs,1,exp3,28195,30000,50000,30,26866,150,9.570834788612537,26716,24390,new for  pDR110_exp3,17430,6960,58100000,23200000
+pDR110,DSM,xIPTG,x100,F9,COL1,c,fcs,1,exp3,42223,30000,50000,30,40429,164,9.653852056769177,40265,37634,new for  pDR110_exp3,31978,5656,106593333.33333334,18853333.333333336

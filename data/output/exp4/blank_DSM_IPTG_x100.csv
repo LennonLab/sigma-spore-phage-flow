@@ -1,0 +1,4 @@
+strain,media,treat,dilution,well,colony,rep,xt,num,exp,total.events,volume.nL,limit.events,limit.volume.uL,singlets,neg.rmv,noise.cutoff,noisy.events,clean.events,clust.model,spore,veg,spore.ml,veg.ml
+blank,DSM,IPTG,x100,H4,blank,a,fcs,1,exp4,341,30000,50000,30,330,63,12.50360486121997,267,6,TS01,NA,6,NA,20000
+blank,DSM,IPTG,x100,H5,blank,b,fcs,1,exp4,330,30000,50000,30,312,86,7.814786769321902,226,130,TS01,124,6,413333.3333333334,20000
+blank,DSM,IPTG,x100,H6,blank,c,fcs,1,exp4,330,30000,50000,30,311,82,11.641347708071702,229,1,TS01,NA,1,NA,3333.3333333333335

@@ -1,0 +1,4 @@
+strain,media,treat,dilution,well,colony,rep,xt,num,exp,total.events,volume.nL,limit.events,limit.volume.uL,singlets,neg.rmv,noise.cutoff,noisy.events,clean.events,clust.model,spore,veg,spore.ml,veg.ml
+SP10,DSM,IPTG,x100,G1,COL1,a,fcs,1,exp4,47964,30000,50000,30,44173,111,9.841732354160131,44062,40075,data/cluster_models/SP10_exp4_cluster_model.Rdata,35346,4729,117820000,15763333.333333334
+SP10,DSM,IPTG,x100,G2,COL1,b,fcs,1,exp4,30354,30000,50000,30,27890,126,9.559960445438872,27764,25157,data/cluster_models/SP10_exp4_cluster_model.Rdata,19410,5747,64700000,19156666.666666668
+SP10,DSM,IPTG,x100,G3,COL1,c,fcs,1,exp4,30150,30000,50000,30,27244,63,9.805779199877778,27181,24281,data/cluster_models/SP10_exp4_cluster_model.Rdata,21462,2819,71540000,9396666.666666668
