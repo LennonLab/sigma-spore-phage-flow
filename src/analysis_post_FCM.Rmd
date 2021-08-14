@@ -6,7 +6,7 @@ editor_options:
   code_folding: hide
 ---
 
-```{r, , include=FALSE}
+```{r setup, , include=FALSE}
 library(renv)
 library(here)
 library(tidyverse, quietly = TRUE)
@@ -17,7 +17,7 @@ library(gtools)
 ```
 
 
-```{r, echo=FALSE, message=FALSE}
+```{r load data, echo=FALSE, message=FALSE}
 # get all the file names to collect
 files <- list.files(here("data/output"), pattern = ".csv",
                     full.names = T, recursive = T)
@@ -57,7 +57,7 @@ d$treat <- recode(d$treat, "xIPTG"="noIPTG")
 **Only consider counts with at least 100 events**
 
 Quantities based on lower event counts are designated a value of 1 cell/mL, to prevent problems with ratio and logs.
-```{r, echo=FALSE}
+```{r clean data, echo=FALSE}
 d <- d %>% 
    mutate(spore.ml = if_else(spore < 100, 1, spore.ml)) %>% 
    mutate(veg.ml = if_else(veg < 100, 1, veg.ml))
@@ -72,7 +72,7 @@ I have N=3 for each flask at each time point. There are some measurements which 
 
 I will apply the outlier filtering on the number of total cells (veg+spore)
 
-```{r, echo=FALSE}
+```{r id outliers, echo=FALSE}
 ol <- 
 d%>%
    mutate(rep.group=interaction(strain, treat,colony,exp))%>%
@@ -95,7 +95,7 @@ for (i in unique(ol$rep.group)){
 # Overview of results
 
 Concentrations of cell types: 
-```{r, message=F, echo=FALSE}
+```{r plot overview, message=F, echo=FALSE}
 d%>%
    mutate(rep.group=interaction(strain, treat,colony,exp))%>%
    left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
@@ -126,16 +126,15 @@ d%>%
 
 ```
 Remove blanks
-```{r, echo=FALSE}
+```{r Remove blanks, echo=FALSE}
 d <- d %>% 
    filter(strain != "blank")
 
 ```
 
-Change in respnse to induction, log10(IPTG/noIPTG):
+Change in response to induction, log10(IPTG/noIPTG):
 
-
-```{r, message=F, echo=FALSE}
+```{r plot response, message=F, echo=FALSE}
 d%>%
    mutate(rep.group=interaction(strain, treat,colony,exp))%>%
    left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
@@ -248,7 +247,7 @@ p
 
 #stats on log ratio of % spores
 
-```{r, echo=FALSE}
+```{r sum log-ratio, echo=FALSE}
 d.sum <- d%>%
    mutate(rep.group=interaction(strain, treat,colony,exp))%>%
    left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
@@ -264,7 +263,7 @@ d.sum <- d%>%
 ```
 
 
-```{r}
+```{r stats log-ratio}
 summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
    
 
@@ -290,7 +289,7 @@ summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
 ```
 
 
-```{r, echo=FALSE}
+```{r plot log-ratio, echo=FALSE}
 p <- 
 d%>%
    mutate(rep.group=interaction(strain, treat,colony,exp))%>%
@@ -331,37 +330,56 @@ p
 # ms plot
 
 ```{r, echo=FALSE}
-p <- 
+d.plot <- 
 d%>%
+   #remove outlier for replicates
    mutate(rep.group=interaction(strain, treat,colony,exp))%>%
    left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
    filter(!outlier)%>%
+   #reduce table
    select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
-   mutate(strain = fct_relevel(strain,"pDR110","sigF", "sigG","Goe3","ELDg168","SP10", "ELDg169"))%>%
+   mutate(strain = fct_relevel(strain,"pDR110","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   # calc percent spore
    mutate(perc.spore=spore.ml/(veg.ml+spore.ml))%>%
+   
+   # average technical replicates
    group_by(strain, treat,colony,exp)%>%
-   summarise(perc.spore=mean(perc.spore))%>%
-   pivot_wider(names_from = treat, values_from = perc.spore)%>%
-   mutate(induction.ratio.log=log10(IPTG/noIPTG))%>%
-   ungroup()%>%
-   mutate(exp=as_factor(exp))%>%
-   mutate(grp=case_when(strain == "pDR110" ~ "neg.ctrl",
+   summarise(perc.spore=mean(perc.spore)) %>% 
+   
+      # panel separation
+   mutate(pnl=case_when(strain == "pDR110" ~ "neg.ctrl",
                         strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage"))%>%
-   
-   ggplot(aes(x=strain, y=induction.ratio.log))+
-      stat_summary(geom = "col", fun = mean, position = position_dodge(width = 0.8), fill="grey", color="black") +
-         stat_summary(geom = "errorbar", fun.data = mean_se, position = position_dodge(width = 0.8), size=1, width=0.2)+
-         geom_point(aes(group=interaction(colony,exp), shape=exp), ,position = position_jitterdodge(jitter.width = NULL, jitter.height = 0,
-  dodge.width = 0.3), size=2)+
-   
-   facet_grid(.~grp, scales = "free_x", space = "free_x")+
+                        TRUE ~ "phage") %>% 
+             as_factor()) %>% 
+   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg.ctrl"))
 
-   ylab("log ( IPTG/noIPTG )")+
+
+
+
+   
+d.plot %>% 
+   # average biological replicates
+   group_by(pnl, strain, treat)%>%
+   summarise(m = mean(perc.spore), n = n(), v = sd(perc.spore)/sqrt(n))%>%
+   
+   #plot
+   ggplot(aes(x=strain, y=m, fill = fct_rev(treat)))+
+   geom_col( position = position_dodge(width = 0.5), 
+            width = 0.5, color="black")+
+   geom_errorbar(aes(ymin = m-v, ymax = m+v, group = fct_rev(treat)),
+                 position = position_dodge(width = 0.5), width = 0.5)+
+   geom_point(data = d.plot, aes(x=strain, y = perc.spore),alpha = 0.5,
+              position = position_jitterdodge(dodge.width =  0.5, jitter.width = 0.05),
+              show.legend = FALSE, shape=21)+
+   
+   facet_grid(.~pnl, scales = "free_x", space = "free_x")+
+
+   ylab("perc. spores")+
+   scale_y_continuous(labels = scales::percent, limits = c(0,1))+
+   scale_fill_viridis_d(direction = 1)+
    theme_classic(base_size = 14)+
    panel_border(color="black")+
-   ggtitle("Response to induction %spores (mean±SE)")+
-   scale_shape_manual(values = c(21:25))+
+   labs(caption = "mean±SE")+
    theme(axis.text.x = element_text(angle = 45, hjust = 1),
          legend.position = "bottom")
 
@@ -374,4 +392,52 @@ d%>%
 #   print(target = "plot.pptx")
 p
 
+```
+
+```{r, echo=FALSE}
+p <- 
+d%>%
+   mutate(rep.group=interaction(strain, treat,colony,exp))%>%
+   left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
+   filter(!outlier)%>%
+   select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
+    mutate(strain = fct_relevel(strain,"pDR110","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   mutate(perc.spore=spore.ml/(veg.ml+spore.ml))%>%
+   group_by(strain, treat,colony,exp)%>%
+   summarise(perc.spore=mean(perc.spore))%>%
+   pivot_wider(names_from = treat, values_from = perc.spore)%>%
+   mutate(induction.ratio.log=(IPTG/noIPTG))%>%
+   ungroup()%>%
+   mutate(exp=as_factor(exp))%>%
+        # panel separation
+   mutate(pnl=case_when(strain == "pDR110" ~ "neg.ctrl",
+                        strain %in% c("sigF","sigG") ~ "host",
+                        TRUE ~ "phage") %>% 
+             as_factor()) %>% 
+   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg.ctrl")) %>% 
+   
+   ggplot(aes(x=strain, y=induction.ratio.log))+
+   geom_hline(yintercept = 1)+
+      stat_summary(geom = "col", fun = mean, position = position_dodge(width = 0.8), fill="grey", color="black", width = 0.5) +
+         stat_summary(geom = "errorbar", fun.data = mean_se, position = position_dodge(width = 0.8), size=1, width=0.3)+
+         geom_point(aes(group=interaction(colony,exp), shape=exp), position = position_jitterdodge(jitter.width = NULL, jitter.height = 0,
+  dodge.width = 0.2), size=2, show.legend = F)+
+   
+   facet_grid(.~pnl, scales = "free_x", space = "free_x")+
+   ylab("log ( IPTG/noIPTG )")+
+   scale_y_log10()+
+   theme_classic(base_size = 14)+
+   panel_border(color="black")+
+   ggtitle("Response to induction %spores (mean±SE)")+
+   scale_shape_manual(values = c(21:25))+
+   theme(axis.text.x = element_text(angle = 45, hjust = 1),
+         legend.position = "bottom")
+# # ggsave("induction_response_perc.pdf",p)
+# library (officer)
+# library(rvg)
+# read_pptx() %>%
+#   add_slide(layout = "Two Content", master = "Office Theme") %>%
+#   ph_with(dml(ggobj = p), location = ph_location_type(type = "body")) %>%
+#   print(target = "plot.pptx")
+p
 ```

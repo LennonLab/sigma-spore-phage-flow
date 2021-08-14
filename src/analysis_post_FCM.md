@@ -24,20 +24,20 @@ I will apply the outlier filtering on the number of total cells
 # Overview of results
 
 Concentrations of cell types:
-![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](analysis_post_FCM_files/figure-gfm/plot%20overview-1.png)<!-- -->
 Remove blanks
 
-Change in respnse to induction, log10(IPTG/noIPTG):
+Change in response to induction, log10(IPTG/noIPTG):
 
-![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](analysis_post_FCM_files/figure-gfm/plot%20response-1.png)<!-- -->
 
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony', 'pop'. You can override using the `.groups` argument.
 
-![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
 
-![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 \#stats on log ratio of % spores
 
@@ -374,4 +374,16 @@ sigG
 
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
 
-![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](analysis_post_FCM_files/figure-gfm/plot%20log-ratio-1.png)<!-- -->
+
+# ms plot
+
+    ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
+
+    ## `summarise()` has grouped output by 'pnl', 'strain'. You can override using the `.groups` argument.
+
+![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+
+    ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
+
+![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
