@@ -258,13 +258,13 @@ d.sum <- d%>%
    group_by(strain, treat,colony,exp)%>%
    summarise(perc.spore=mean(perc.spore))%>%
    pivot_wider(names_from = treat, values_from = perc.spore)%>%
-   mutate(induction.ratio.log=log(IPTG/noIPTG))%>%
+   mutate(induction.ratio=(IPTG/noIPTG))%>%
    ungroup()
 ```
 
 
 ```{r stats log-ratio}
-summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
+summary(aov(induction.ratio~strain+colony+exp, d.sum))
    
 
    d.test <- tibble()
@@ -273,7 +273,7 @@ summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
       if (s =="pDR110") next
       d.test <-d.sum %>% 
          filter(strain == s |strain =="pDR110") %>% 
-         t.test(induction.ratio.log ~ strain, data = .) %>% 
+         t.test(induction.ratio ~ strain, data = .) %>% 
          broom::tidy() %>% 
          mutate(strain = s) %>% 
          bind_rows(d.test, .)
@@ -308,7 +308,7 @@ d%>%
    ggplot(aes(x=strain, y=perc.spore))+
       stat_summary(geom = "col", fun = mean, position = position_dodge(width = 0.8), fill="grey", color="black") +
          stat_summary(geom = "errorbar", fun.data = mean_se, position = position_dodge(width = 0.8), size=1, width=0.2)+
-         geom_point(aes(group=interaction(colony,exp), shape=exp), ,position = position_jitterdodge(jitter.width = NULL, jitter.height = 0,
+         geom_point(aes(group=interaction(colony,exp), shape=exp), position = position_jitterdodge(jitter.width = NULL, jitter.height = 0,
   dodge.width = 0.3), size=2)+
    # stat_summary(geom = "point", fun = mean, position = position_dodge(width = 0.8), shape=21, fill="white", size=3) +
    facet_grid(.~treat)+geom_hline(yintercept = 0)+
@@ -338,7 +338,8 @@ d%>%
    filter(!outlier)%>%
    #reduce table
    select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
-   mutate(strain = fct_relevel(strain,"pDR110","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
+   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
    # calc percent spore
    mutate(perc.spore=spore.ml/(veg.ml+spore.ml))%>%
    
@@ -347,11 +348,11 @@ d%>%
    summarise(perc.spore=mean(perc.spore)) %>% 
    
       # panel separation
-   mutate(pnl=case_when(strain == "pDR110" ~ "neg.ctrl",
+   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
                         strain %in% c("sigF","sigG") ~ "host",
                         TRUE ~ "phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg.ctrl"))
+   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl"))
 
 
 
@@ -360,12 +361,17 @@ d%>%
 d.plot %>% 
    # average biological replicates
    group_by(pnl, strain, treat)%>%
-   summarise(m = mean(perc.spore), n = n(), v = sd(perc.spore)/sqrt(n))%>%
+   summarise(m = mean(perc.spore), n = n(), v = sd(perc.spore)/sqrt(n),
+             .groups = "drop")%>%
    
    #plot
    ggplot(aes(x=strain, y=m, fill = fct_rev(treat)))+
-   geom_col( position = position_dodge(width = 0.5), 
-            width = 0.5, color="black")+
+   # geom_col( position = position_dodge(width = 0.5), 
+   #          width = 0.5, color="black")+
+      geom_rect(aes(ymin = 5e-3, ymax = m,
+                 xmin = ..x..-.3, xmax = ..x..+.3),
+                   position = position_dodge(width = 0.5), width = 0.5,# fill = fct_rev(treat)),
+                color= "black", show.legend = F)+
    geom_errorbar(aes(ymin = m-v, ymax = m+v, group = fct_rev(treat)),
                  position = position_dodge(width = 0.5), width = 0.5)+
    geom_point(data = d.plot, aes(x=strain, y = perc.spore),alpha = 0.5,
@@ -375,7 +381,7 @@ d.plot %>%
    facet_grid(.~pnl, scales = "free_x", space = "free_x")+
 
    ylab("perc. spores")+
-   scale_y_continuous(labels = scales::percent, limits = c(0,1))+
+   scale_y_continuous(labels = scales::percent, trans = "log10")+
    scale_fill_viridis_d(direction = 1)+
    theme_classic(base_size = 14)+
    panel_border(color="black")+
@@ -390,6 +396,65 @@ d.plot %>%
 #   add_slide(layout = "Two Content", master = "Office Theme") %>%
 #   ph_with(dml(ggobj = p), location = ph_location_type(type = "body")) %>%
 #   print(target = "plot.pptx")
+# p
+
+```
+
+```{r plot log col, echo=FALSE}
+d.test.plot <- 
+   d.test %>% 
+   mutate(p.lab = str_replace(p.lab, "\\.", "")) %>% 
+   # panel separation
+   mutate(pnl=case_when(#strain == "empty vector" ~ "neg. ctrl",
+                        strain %in% c("sigF","sigG") ~ "host",
+                        TRUE ~ "phage") %>% 
+             as_factor()) %>% 
+   mutate(pnl = fct_relevel(pnl,"phage", "host"))
+
+d.plot.log <- d.plot %>% 
+   pivot_wider(names_from = treat, values_from = perc.spore)%>%
+   mutate(induction.ratio=(IPTG/noIPTG))%>%
+   ungroup()
+
+p <- d.plot.log %>% 
+   # average biological replicates
+   group_by(pnl, strain)%>%
+   summarise(m = mean(induction.ratio), n = n(),
+             v = sd(induction.ratio)/sqrt(n), .groups = "drop")%>%
+   
+   #plot
+   ggplot(aes(x=strain, y=m) )+
+   # geom_col( position = position_dodge(width = 0.5), 
+   #          width = 0.5, color="black")+
+   geom_rect(aes(ymin = 1e-5, ymax = m,
+                 xmin = ..x..-.3, xmax = ..x..+.3,
+                 fill=pnl), color= "black", show.legend = F)+
+   geom_errorbar(aes(ymin = m-v, ymax = m+v), width = 0.3)+
+   geom_point(data = d.plot.log, aes(x=strain, y = induction.ratio, shape = exp),
+              alpha = 0.7,position = position_jitter(width = 0.15),
+              show.legend = FALSE, fill = "white")+
+   #p values asterisks
+   geom_text(data = d.test.plot, aes( label = p.lab, y = 1.2),
+             size = 10, color = "grey") + 
+   
+   facet_grid(.~pnl, scales = "free_x", space = "free_x")+
+
+   ylab("spore yield")+
+   xlab("induced sigma factor")+
+   scale_y_continuous(labels = scales::percent, trans = "log10")+
+   annotation_logticks(sides = "l", colour = "grey")+
+   coord_cartesian(ylim = c(5e-3,NA))+
+   scale_fill_viridis_d()+
+   scale_shape_manual(values = 21:25)+
+   theme_classic(base_size = 12)+
+   panel_border(color="black")+
+   labs(caption = "mean±SE ; P-values compared with empty vector: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘ ’ 1")+
+   theme(axis.text.x = element_text(angle = 45, hjust = 1),
+         legend.position = "bottom",
+         plot.caption = element_text(colour = "grey"))
+
+ggsave(here("fig/induction_response_perc.png"),p,
+       width = 6, height = 4)
 p
 
 ```
@@ -424,11 +489,12 @@ d%>%
   dodge.width = 0.2), size=2, show.legend = F)+
    
    facet_grid(.~pnl, scales = "free_x", space = "free_x")+
-   ylab("log ( IPTG/noIPTG )")+
+   ylab("spore yield")+
+   xlab("sigma factor gene expressed")+
    scale_y_log10()+
    theme_classic(base_size = 14)+
    panel_border(color="black")+
-   ggtitle("Response to induction %spores (mean±SE)")+
+   labs(caption = "mean±SE")+
    scale_shape_manual(values = c(21:25))+
    theme(axis.text.x = element_text(angle = 45, hjust = 1),
          legend.position = "bottom")

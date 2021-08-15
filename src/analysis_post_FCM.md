@@ -44,14 +44,14 @@ Change in response to induction, log10(IPTG/noIPTG):
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
 
 ``` r
-summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
+summary(aov(induction.ratio~strain+colony+exp, d.sum))
 ```
 
-    ##             Df Sum Sq Mean Sq F value Pr(>F)    
-    ## strain       6 117.50  19.583  68.271 <2e-16 ***
-    ## colony       4   0.51   0.129   0.448 0.7732    
-    ## exp          3   2.33   0.778   2.713 0.0557 .  
-    ## Residuals   46  13.19   0.287                   
+    ##             Df Sum Sq Mean Sq F value   Pr(>F)    
+    ## strain       6  7.421  1.2369  19.119 5.05e-11 ***
+    ## colony       4  0.077  0.0193   0.299   0.8774    
+    ## exp          3  0.662  0.2206   3.410   0.0251 *  
+    ## Residuals   46  2.976  0.0647                     
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -62,7 +62,7 @@ summary(aov(induction.ratio.log~strain+colony+exp, d.sum))
       if (s =="pDR110") next
       d.test <-d.sum %>% 
          filter(strain == s |strain =="pDR110") %>% 
-         t.test(induction.ratio.log ~ strain, data = .) %>% 
+         t.test(induction.ratio ~ strain, data = .) %>% 
          broom::tidy() %>% 
          mutate(strain = s) %>% 
          bind_rows(d.test, .)
@@ -127,34 +127,34 @@ alternative
 sigF
 </td>
 <td style="text-align:right;">
-0.0000227
+0.0001818
 </td>
 <td style="text-align:right;">
-0.0000680
+0.0005453
 </td>
 <td style="text-align:left;">
 \*\*\*
 </td>
 <td style="text-align:right;">
-2.0110228
+0.8652696
 </td>
 <td style="text-align:right;">
--0.0422284
+1.02375
 </td>
 <td style="text-align:right;">
--2.0532513
+0.1584802
 </td>
 <td style="text-align:right;">
-6.9363013
+6.4317579
 </td>
 <td style="text-align:right;">
-11.182110
+8.198880
 </td>
 <td style="text-align:right;">
-1.3741629
+0.5563460
 </td>
 <td style="text-align:right;">
-2.6478828
+1.1741932
 </td>
 <td style="text-align:left;">
 Welch Two Sample t-test
@@ -168,34 +168,34 @@ two.sided
 sigG
 </td>
 <td style="text-align:right;">
-0.0160111
+0.0151901
 </td>
 <td style="text-align:right;">
-0.0240167
+0.0227851
 </td>
 <td style="text-align:left;">
 
 -   </td>
     <td style="text-align:right;">
-    0.9974987
+    0.5331770
     </td>
     <td style="text-align:right;">
-    -0.0422284
+    1.02375
     </td>
     <td style="text-align:right;">
-    -1.0397271
+    0.4905729
     </td>
     <td style="text-align:right;">
-    2.9005752
+    2.7689175
     </td>
     <td style="text-align:right;">
-    9.877469
+    13.857782
     </td>
     <td style="text-align:right;">
-    0.2299583
+    0.1197833
     </td>
     <td style="text-align:right;">
-    1.7650390
+    0.9465706
     </td>
     <td style="text-align:left;">
     Welch Two Sample t-test
@@ -209,34 +209,34 @@ sigG
     Goe3
     </td>
     <td style="text-align:right;">
-    0.0004348
+    0.0018176
     </td>
     <td style="text-align:right;">
-    0.0008697
+    0.0036351
     </td>
     <td style="text-align:left;">
-    \*\*\*
+    \*\*
     </td>
     <td style="text-align:right;">
-    0.8739457
+    0.6034826
     </td>
     <td style="text-align:right;">
-    -0.0422284
+    1.02375
     </td>
     <td style="text-align:right;">
-    -0.9161741
+    0.4202673
     </td>
     <td style="text-align:right;">
-    4.6073686
+    4.3873280
     </td>
     <td style="text-align:right;">
-    13.635705
+    8.864083
     </td>
     <td style="text-align:right;">
-    0.4660912
+    0.2915912
     </td>
     <td style="text-align:right;">
-    1.2818002
+    0.9153740
     </td>
     <td style="text-align:left;">
     Welch Two Sample t-test
@@ -250,34 +250,34 @@ sigG
     ELDg168
     </td>
     <td style="text-align:right;">
-    0.0457281
+    0.0532393
     </td>
     <td style="text-align:right;">
-    0.0548737
+    0.0638871
     </td>
     <td style="text-align:left;">
     .
     </td>
     <td style="text-align:right;">
-    0.5380198
+    0.3626490
     </td>
     <td style="text-align:right;">
-    -0.0422284
+    1.02375
     </td>
     <td style="text-align:right;">
-    -0.5802482
+    0.6611008
     </td>
     <td style="text-align:right;">
-    2.1731837
+    2.0967041
     </td>
     <td style="text-align:right;">
-    15.422322
+    15.123347
     </td>
     <td style="text-align:right;">
-    0.0115880
+    -0.0057479
     </td>
     <td style="text-align:right;">
-    1.0644515
+    0.7310459
     </td>
     <td style="text-align:left;">
     Welch Two Sample t-test
@@ -291,33 +291,33 @@ sigG
     SP10
     </td>
     <td style="text-align:right;">
-    0.8927637
+    0.6525419
     </td>
     <td style="text-align:right;">
-    0.8927637
+    0.6525419
     </td>
     <td style="text-align:left;">
     </td>
     <td style="text-align:right;">
-    0.0229639
+    0.0670483
     </td>
     <td style="text-align:right;">
-    -0.0422284
+    1.02375
     </td>
     <td style="text-align:right;">
-    -0.0651923
+    0.9567015
     </td>
     <td style="text-align:right;">
-    0.1379307
+    0.4635731
     </td>
     <td style="text-align:right;">
-    11.108165
+    10.358384
     </td>
     <td style="text-align:right;">
-    -0.3430398
+    -0.2537108
     </td>
     <td style="text-align:right;">
-    0.3889676
+    0.3878074
     </td>
     <td style="text-align:left;">
     Welch Two Sample t-test
@@ -331,34 +331,34 @@ sigG
     ELDg169
     </td>
     <td style="text-align:right;">
-    0.0000000
+    0.0001067
     </td>
     <td style="text-align:right;">
-    0.0000000
+    0.0005453
     </td>
     <td style="text-align:left;">
     \*\*\*
     </td>
     <td style="text-align:right;">
-    4.1088530
+    1.0071715
     </td>
     <td style="text-align:right;">
-    -0.0422284
+    1.02375
     </td>
     <td style="text-align:right;">
-    -4.1510814
+    0.0165783
     </td>
     <td style="text-align:right;">
-    22.8371752
+    7.8020680
     </td>
     <td style="text-align:right;">
-    13.586504
+    7.002654
     </td>
     <td style="text-align:right;">
-    3.7218594
+    0.7019449
     </td>
     <td style="text-align:right;">
-    4.4958467
+    1.3123982
     </td>
     <td style="text-align:left;">
     Welch Two Sample t-test
@@ -380,9 +380,11 @@ sigG
 
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
 
-    ## `summarise()` has grouped output by 'pnl', 'strain'. You can override using the `.groups` argument.
+    ## Warning: Ignoring unknown parameters: width
 
-![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](analysis_post_FCM_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+![](analysis_post_FCM_files/figure-gfm/plot%20log%20col-1.png)<!-- -->
 
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
 
