@@ -361,17 +361,17 @@ p <-
    geom_line(aes(group = pop))+
 
    geom_line(aes(group = pop), size =1)+
-   geom_point( size=2, )+#shape = 21,fill = "white")+
+   geom_pointrange(aes(ymin = m-v, ymax = m+v))+#shape = 21,fill = "white")+
 
    facet_wrap(pnl~strain, nrow = 2)+
 
    ylab("cells/ml")+
-   # scale_y_continuous(breaks = axis.breaks, labels = abs(axis.breaks))+
+  scale_y_log10()+
    scale_fill_viridis_d(direction = 1)+
    scale_colour_viridis_d(direction = 1)+
    theme_classic(base_size = 14)+
    panel_border(color="black")+
-   labs(caption = "mean±SE (n ≥ 8) ; P-values: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘ ’ 1")+
+   labs(caption = "mean±SE (n ≥ 8)" )+
    theme(axis.text.x = element_text(size = 18),
          legend.position = "bottom")
 
