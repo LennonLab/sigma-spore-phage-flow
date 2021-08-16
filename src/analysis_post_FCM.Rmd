@@ -132,6 +132,256 @@ d <- d %>%
 
 ```
 
+
+## Total cells
+
+```{r sum total cells, echo=FALSE}
+d.sum.cells <- d%>%
+   #remove outlier for technical replicates
+   mutate(rep.group=interaction(strain, treat,colony,exp))%>%
+   left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
+   filter(!outlier)%>%
+   
+   select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
+   mutate(strain = fct_relevel(strain,"pDR110","sigF", "sigG","Goe3","ELDg168","SP10", "ELDg169"))%>%
+   mutate(cells.ml=veg.ml+spore.ml)%>%
+   group_by(strain, treat,colony,exp)%>%
+   summarise(cells.ml=mean(cells.ml) ,
+             spore.ml=mean(spore.ml), 
+             veg.ml = mean(veg.ml) )%>%
+   pivot_longer(cols = ends_with("ml"), names_to = "pop", values_to = "quant") %>%  
+     ungroup()
+
+d.diff.cells <- d%>%
+   #remove outlier for technical replicates
+   mutate(rep.group=interaction(strain, treat,colony,exp))%>%
+   left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
+   filter(!outlier)%>%
+   
+   select("strain","exp", "colony","treat","spore.ml","veg.ml")%>%
+   mutate(cells.ml=veg.ml+spore.ml)%>%
+      pivot_longer(cols = ends_with("ml"), names_to = "pop", values_to = "quant") %>% 
+   group_by(strain, treat,colony,exp, pop)%>%
+   summarise(quant = mean(quant) )%>%
+   pivot_wider(names_from = "treat", values_from = "quant") %>% 
+  ungroup() %>% 
+     mutate(diff = noIPTG - IPTG)
+
+```
+
+
+```{r stats total cells}
+# summary(aov(induction.ratio~strain+colony+exp, d.sum.cells))
+   
+
+   d.test.cells <- tibble()
+# t-tests against control
+   for (s in unique(d.sum.cells$strain)){
+      for (who in c("spore.ml", "veg.ml", "cells.ml")){
+              
+          d.test.cells <- d.sum.cells %>% 
+               filter(strain == s, pop == who) %>% 
+               t.test(quant ~ treat, data = .) %>% 
+               broom::tidy() %>% 
+               mutate(strain = s, pop = who) %>% 
+               bind_rows(d.test.cells, .)
+      }
+
+   }
+   
+# adjust p-value for multiple testing
+   d.test.cells <- d.test.cells %>% 
+      mutate(adj.p = p.adjust(p.value, method = "BH"),
+             p.lab = stars.pval(adj.p)) %>% 
+      relocate(strain, p.value, adj.p, p.lab)
+   
+   knitr::kable(d.test.cells, format = "html")
+```
+
+
+```{r stats diff cells}
+
+   d.test.diffs <- tibble()
+# t-tests against control
+   for (s in unique(d.diff.cells$strain)){
+      for (who in c("spore.ml", "veg.ml", "cells.ml")){
+              
+          d.test.diffs <- d.diff.cells %>% 
+               filter(strain == s, pop == who) %>% 
+             pull(diff) %>% 
+               t.test(., paired = F, mu = 0) %>% 
+               broom::tidy() %>% 
+               mutate(strain = s, pop = who) %>% 
+               bind_rows(d.test.diffs, .)
+      }
+
+   }
+   
+# adjust p-value for multiple testing
+   d.test.diffs <- d.test.diffs %>% 
+      mutate(adj.p = p.adjust(p.value, method = "BH"),
+             p.lab = stars.pval(adj.p)) %>% 
+      relocate(strain, p.value, adj.p, p.lab)
+   
+   knitr::kable(d.test.diffs, format = "html")
+```
+
+```{r cell stats for plot}
+plot.p <- 
+d.test.cells%>% 
+   select(strain, pop, p.value, p.lab) %>% 
+   
+   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
+   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   
+      mutate(pop = if_else(pop=="spore.ml", "spores","vegetative")) %>%
+    mutate(pop = fct_relevel(pop,"spores", "vegetative")) %>% 
+ 
+   
+      # panel separation
+   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
+                        strain %in% c("sigF","sigG") ~ "host",
+                        TRUE ~ "phage") %>% 
+             as_factor()) %>% 
+   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
+   mutate(y = if_else(pop=="vegetative", -9e7, 9e7)) %>% 
+   mutate(p.lab = str_replace(p.lab, "\\.", ""))
+
+```
+
+
+```{r plot total cells, echo=FALSE}
+
+d.plot.cells <- 
+d%>%
+   #remove outlier for replicates
+   mutate(rep.group=interaction(strain, treat,colony,exp))%>%
+   left_join(., ol%>%select(well, outlier, rep.group), by=c("well", "rep.group"))%>%
+   filter(!outlier)%>%
+   #reduce table
+   select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
+   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
+   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+
+   # average technical replicates
+   group_by(strain, treat,colony,exp)%>%
+   summarise(spore.ml=mean(spore.ml), veg.ml = mean (veg.ml)) %>% 
+   
+   # long format
+   pivot_longer(cols = c("spore.ml", "veg.ml"),
+                names_to = "pop", values_to = "cell.ml") %>% 
+   mutate(pop = if_else(pop=="spore.ml", "spores","vegetative")) %>%
+    mutate(pop = fct_relevel(pop,"spores", "vegetative")) %>% 
+ 
+   
+      # panel separation
+   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
+                        strain %in% c("sigF","sigG") ~ "host",
+                        TRUE ~ "phage") %>% 
+             as_factor()) %>% 
+   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
+   
+   mutate(`IPTG induction` = ifelse(treat=="noIPTG", "-", "+")) %>% 
+   
+   mutate(cell.ml = if_else(pop=="vegetative", -cell.ml, cell.ml))
+
+
+
+axis.breaks <- c(-1e8, -5e7, 0, 5e7, 1e8)
+   
+p <- 
+   d.plot.cells %>% 
+   # average biological replicates
+   group_by(pnl, strain, `IPTG induction`, pop)%>%
+   summarise(m = mean(cell.ml), n = n(), v = sd(cell.ml)/sqrt(n),
+             .groups = "drop")%>%
+
+   #plot
+   ggplot(aes(x=`IPTG induction`, y=m, fill = pop))+
+   geom_hline(yintercept = 0, color="grey")+
+   geom_bar(position="stack", stat="identity", width = 0.5, color="black")+
+   geom_errorbar(position="identity", width = 0.2 , size = 1,
+                 aes(ymin = m-v, ymax = m+v))+
+   geom_text(data = plot.p, aes(x = 1.5, y = y, label = p.lab, color = pop),
+             size=8, alpha = 0.5)+
+   # geom_jitter(data = d.plot.cells, aes(x=`IPTG induction`, y = cell.ml),
+   #            alpha = 0.5,show.legend = FALSE, shape=21, width = 0.2, fill="white")+
+
+   facet_wrap(pnl~strain, nrow = 2)+
+
+   ylab("cells/ml")+
+   scale_y_continuous(breaks = axis.breaks, labels = abs(axis.breaks),
+                      limits = c(-1.1e8,1.1e8))+
+   scale_fill_viridis_d(direction = 1)+
+   scale_colour_viridis_d(direction = 1)+
+   theme_classic(base_size = 14)+
+   panel_border(color="black")+
+   labs(caption = "mean±SE (n ≥ 8) ; P-values: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘ ’ 1")+
+   theme(axis.text.x = element_text(size = 18),
+         legend.position = "bottom")
+
+ggsave(here("fig/induction_response_cells.png"),p,
+       width = 6, height = 6)
+p
+
+
+```
+
+
+```{r plot diff cells, echo=FALSE}
+
+d.plot.diff <- 
+d.diff.cells%>%
+   select(-diff) %>% 
+   filter(strain != "blank") %>% 
+   pivot_longer(cols = contains("IPTG"), names_to = "treat", values_to = "cell.ml") %>% 
+
+   # panel separation
+   mutate(strain = str_replace(strain, "pDR110","empty vector" )) %>% 
+   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
+                        strain %in% c("sigF","sigG") ~ "host",
+                        TRUE ~ "phage") %>% 
+             as_factor()) %>% 
+   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
+   
+   mutate(`IPTG induction` = ifelse(treat=="noIPTG", "-", "+")) 
+
+
+
+p <-
+   d.plot.diff %>% 
+   # average biological replicates
+   group_by(pnl, strain, `IPTG induction`, pop)%>%
+   summarise(m = mean(cell.ml), n = n(), v = sd(cell.ml)/sqrt(n),
+             .groups = "drop")%>%
+
+   #plot
+   ggplot(aes(x=`IPTG induction`, y=m, color = pop))+
+   geom_line(data = d.plot.diff, aes(y=cell.ml, group = interaction(exp,colony,pop)), alpha = 0.2, size = 0.5)+
+   geom_line(aes(group = pop))+
+
+   geom_line(aes(group = pop), size =1)+
+   geom_point( size=2, )+#shape = 21,fill = "white")+
+
+   facet_wrap(pnl~strain, nrow = 2)+
+
+   ylab("cells/ml")+
+   # scale_y_continuous(breaks = axis.breaks, labels = abs(axis.breaks))+
+   scale_fill_viridis_d(direction = 1)+
+   scale_colour_viridis_d(direction = 1)+
+   theme_classic(base_size = 14)+
+   panel_border(color="black")+
+   labs(caption = "mean±SE (n ≥ 8) ; P-values: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘ ’ 1")+
+   theme(axis.text.x = element_text(size = 18),
+         legend.position = "bottom")
+
+ggsave(here("fig/induction_response.png"),p,
+       width = 6, height = 6)
+p
+
+
+```
+
 Change in response to induction, log10(IPTG/noIPTG):
 
 ```{r plot response, message=F, echo=FALSE}
