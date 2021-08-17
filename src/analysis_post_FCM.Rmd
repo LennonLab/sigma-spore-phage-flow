@@ -13,7 +13,9 @@ library(tidyverse, quietly = TRUE)
 library(cowplot, quietly = TRUE)
 library(outliers, quietly = TRUE)
 library(broom)
+library(pander)
 library(gtools)
+library(scales)
 ```
 
 
@@ -195,7 +197,24 @@ d.diff.cells <- d%>%
              p.lab = stars.pval(adj.p)) %>% 
       relocate(strain, p.value, adj.p, p.lab)
    
-   knitr::kable(d.test.cells, format = "html")
+   #print pretty table
+   d.test.cells %>% 
+      mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
+      mutate(pop = case_when(pop=="spore.ml" ~ "spores",
+                             pop=="veg.ml" ~"vegetative",
+                             pop=="cells.ml" ~ "total cells")) %>%
+      mutate(group1 = "+ IPTG") %>% 
+      mutate(group2 = "- IPTG") %>% 
+      select( `induced gene` = strain, 
+              group1 , group2,
+            `Test statistic` = statistic,
+            df = parameter, 
+            `P value` = p.value, `adjusted P` = adj.p,
+            ` ` = p.lab,
+            mean_group1 = estimate1, mean_group2 = estimate2,
+            method, `Alternative hypothesis` = alternative) %>% 
+   pander()
+      
 ```
 
 
@@ -223,7 +242,22 @@ d.diff.cells <- d%>%
              p.lab = stars.pval(adj.p)) %>% 
       relocate(strain, p.value, adj.p, p.lab)
    
-   knitr::kable(d.test.diffs, format = "html")
+     # print pretty table
+   d.test.diffs %>% 
+      mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
+       mutate(pop = case_when(pop=="spore.ml" ~ "spores",
+                              pop=="veg.ml" ~"vegetative",
+                              pop=="cells.ml" ~ "total cells")) %>%
+      mutate(estimate.ci = paste(scientific(estimate),"±",scientific(abs(estimate-conf.low)))) %>% 
+    select( `induced gene` = strain, 
+            `cell population` = pop,
+            `Test statistic` = statistic,
+            df = parameter, 
+            `P value` = p.value, `adjusted P` = adj.p,
+            ` ` = p.lab,
+            `mean±CI (noIPTG - IPTG)` = estimate.ci,
+            method, `Alternative hypothesis` = alternative) %>% 
+   pander()
 ```
 
 ```{r cell stats for plot}
@@ -535,7 +569,17 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
              p.lab = stars.pval(adj.p)) %>% 
       relocate(strain, p.value, adj.p, p.lab)
    
-   knitr::kable(d.test, format = "html")
+   # print pretty table
+   d.test %>% 
+    mutate(group2 = "empty vector") %>% 
+    select( group1 = strain, group2,
+            `Test statistic` = statistic,
+            df = parameter, 
+            `P value` = p.value, `adjusted P` = adj.p,
+            ` ` = p.lab,
+            mean_group1 = estimate1, mean_group2 = estimate2,
+            method, `Alternative hypothesis` = alternative) %>% 
+   pander()
 ```
 
 
