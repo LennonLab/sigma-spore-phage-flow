@@ -170,7 +170,7 @@ p <- sum_colonies %>%
   ylab("OD600")+
   xlab("Time (hr)")+
   scale_x_continuous(breaks = c(0,12,24))+
-  labs(caption = "mean±SE (n=3)")+
+  # labs(caption = "mean±SE (n=3)")+
 
   theme_classic(base_size = 12)+
   panel_border(color = "black")+
@@ -221,6 +221,7 @@ ggsave(here("fig/induction_growth_OD_colonies.png"),grob,
 grid.draw(grob)
 ```
 
+mean±SE (n=3)
 
 ## OD at innoculation
 
