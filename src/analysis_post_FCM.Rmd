@@ -405,13 +405,12 @@ p <-
    scale_colour_viridis_d(direction = 1)+
    theme_classic(base_size = 14)+
    panel_border(color="black")+
-   labs(caption = "mean±SE (n ≥ 8)" )+
    theme(axis.text.x = element_text(size = 18),
          legend.position = "bottom")
 
 ggsave(here("fig/induction_response.png"),p,
        width = 6, height = 6)
-p
+p +labs(caption = "mean±SE (n ≥ 8)" )
 
 
 ```
@@ -623,7 +622,7 @@ p
 
 # ms plot
 
-```{r, echo=FALSE}
+```{r , echo=FALSE}
 d.plot <- 
 d%>%
    #remove outlier for replicates
@@ -742,14 +741,13 @@ p <- d.plot.log %>%
    scale_shape_manual(values = 21:25)+
    theme_classic(base_size = 12)+
    panel_border(color="black")+
-   labs(caption = "mean±SE ; P-values compared with empty vector: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘ ’ 1")+
-   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-         legend.position = "bottom",
-         plot.caption = element_text(colour = "grey"))
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave(here("fig/induction_response_perc.png"),p,
        width = 6, height = 4)
-p
+p + 
+   labs(caption = "mean±SE ; P-values compared with empty vector: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘ ’ 1")+
+      theme(plot.caption = element_text(colour = "grey"))
 
 ```
 
