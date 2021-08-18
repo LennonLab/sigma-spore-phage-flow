@@ -378,23 +378,28 @@ d.diff.cells%>%
              as_factor()) %>% 
    mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
    
-   mutate(`IPTG induction` = ifelse(treat=="noIPTG", "-", "+")) 
+   mutate(`IPTG induction` = ifelse(treat=="noIPTG", "-", "+")) %>% 
+   
+   mutate(population = case_when(pop=="spore.ml" ~ "spores",
+                       pop=="veg.ml" ~"vegetative",
+                       pop=="cells.ml" ~ "total cells")) %>% 
+   mutate(population = fct_relevel(population, "total cells", "spores", "vegetative"))
 
 
 
 p <-
    d.plot.diff %>% 
    # average biological replicates
-   group_by(pnl, strain, `IPTG induction`, pop)%>%
+   group_by(pnl, strain, `IPTG induction`, population)%>%
    summarise(m = mean(cell.ml), n = n(), v = sd(cell.ml)/sqrt(n),
              .groups = "drop")%>%
 
    #plot
-   ggplot(aes(x=`IPTG induction`, y=m, color = pop))+
-   geom_line(data = d.plot.diff, aes(y=cell.ml, group = interaction(exp,colony,pop)), alpha = 0.2, size = 0.5)+
-   geom_line(aes(group = pop))+
+   ggplot(aes(x=`IPTG induction`, y=m, color = population))+
+   geom_line(data = d.plot.diff, aes(y=cell.ml, group = interaction(exp,colony,population)), alpha = 0.2, size = 0.5)+
+   geom_line(aes(group = population))+
 
-   geom_line(aes(group = pop), size =1)+
+   geom_line(aes(group = population), size =1)+
    geom_pointrange(aes(ymin = m-v, ymax = m+v))+#shape = 21,fill = "white")+
 
    facet_wrap(pnl~strain, nrow = 2)+
@@ -406,7 +411,8 @@ p <-
    theme_classic(base_size = 14)+
    panel_border(color="black")+
    theme(axis.text.x = element_text(size = 18),
-         legend.position = "bottom")
+         legend.position = c(0.88, 0.2),
+         legend.direction = "vertical")
 
 ggsave(here("fig/induction_response.png"),p,
        width = 6, height = 6)
@@ -569,15 +575,19 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
       relocate(strain, p.value, adj.p, p.lab)
    
    # print pretty table
-   d.test %>% 
+   d.test %>%
+      mutate(estimate.ci = paste(signif(estimate,3),"±",signif(abs(estimate-conf.low),3))) %>% 
     mutate(group2 = "empty vector") %>% 
-    select( group1 = strain, group2,
+      select( group1 = strain, group2,
             `Test statistic` = statistic,
             df = parameter, 
             `P value` = p.value, `adjusted P` = adj.p,
             ` ` = p.lab,
-            mean_group1 = estimate1, mean_group2 = estimate2,
+            mean_group1 = estimate2, mean_group2 = estimate1,
+            `difference in means±CI` = estimate.ci,
             method, `Alternative hypothesis` = alternative) %>% 
+      mutate(group1 = fct_relevel(group1,"sigF", "sigG","ELDg168","ELDg169","Goe3","SP10"))%>%
+      arrange(group1) %>% 
    pander()
 ```
 
