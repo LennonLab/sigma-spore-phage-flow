@@ -119,8 +119,8 @@ sum_colonies <-
   mutate(col.id = paste(exp, strain, treat,colony), sep ="_") %>% 
   # arrang labels
   mutate(strain=str_replace(strain,"^g","ELDg"))%>%
-   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))
+   mutate(strain = str_replace(strain, "pDR110", "empty vctr")) %>% 
+   mutate(strain = fct_relevel(strain,"empty vctr","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))
 
 p <- sum_colonies%>%
   # filter(Time<5)%>%
@@ -145,7 +145,7 @@ p
 ```
 Plot by strain, panel per colony.
 
-```{r plot colonY panels, message=FALSE}
+```{r plot colony panels, message=FALSE}
 col_numbers <-
   sum_colonies %>% 
   mutate(col.id2 = paste(exp, strain, colony), sep ="_") %>%
@@ -159,28 +159,66 @@ col_numbers <-
 p <- sum_colonies %>% 
   mutate(col.id2 = paste(exp, strain, colony), sep ="_") %>%
   left_join(., col_numbers, by = "col.id2") %>% 
+  mutate(IPTG = if_else(treat=="IPTG", "+","-") %>% fct_rev()) %>% 
   
   ggplot(aes(x=Time, y=m))+
   geom_vline(xintercept = 4.5, color="grey")+
-  geom_line(aes(group = col.id, color=treat), size=.5)+
-  geom_errorbar(aes(ymin = m-v, ymax = m+v,  color=treat), alpha = 0.2)+
+  geom_line(aes(group = col.id, color=IPTG), size=.5)+
+  geom_errorbar(aes(ymin = m-v, ymax = m+v,  color=IPTG), alpha = 0.2)+
   facet_grid(fct_rev(strain) ~ n.col)+
   
   ylab("OD600")+
   xlab("Time (hr)")+
-  scale_x_continuous(breaks = seq(0,24,6))+
+  scale_x_continuous(breaks = c(0,12,24))+
   labs(caption = "mean±SE (n=3)")+
 
   theme_classic(base_size = 12)+
   panel_border(color = "black")+
   scale_colour_viridis_d()+
-  theme(legend.position = c(.9, .2), 
+  theme(legend.position = c(.93, .4), 
         legend.box.background = element_rect(colour = "grey"),
-        strip.text = element_text(size = 10))
+        legend.text = element_text(size=14, face = "bold"),
+        strip.text = element_text(size = 10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank())
   
-ggsave(here("fig/induction_growth_OD_colonies.png"),p,
+# ggsave(here("fig/induction_growth_OD_colonies.png"),p,
+#        width = 8, height = 6)
+# p  
+```
+
+
+```{r empty panels}
+#https://stackoverflow.com/questions/49521848/remove-unused-facet-combinations-in-2-way-facet-grid
+library(grid)
+library(gtable)
+
+# Turn your ggplot2 plot into a grob.
+grob <- ggplotGrob(p)
+# Working out which facets to remove, and which axes to move where depends on the grid-structure of your grob. gtable_show_layout(grob) gives a visual representation of your grid structure, where numbers like (7, 4) denote a panel in row 7 and column 4.
+# gtable_show_layout(grob, cell.label = T)
+# grob$layout$name
+
+# Remove facets
+rmv.panels <- paste0("panel-", rep(3:7,each = 2),"-", 9:10) #%>% paste0(.,9:10)
+idx <- which(grob$layout$name %in% rmv.panels)
+for (i in idx) grob$grobs[[i]] <- nullGrob()
+
+# Move x axes up
+# axis-b-9 and axis-b-10 needs to move up 10 rows (5 rows and 5 gaps)
+idx <- which(grob$layout$name %in% c("axis-b-9", "axis-b-10"))
+grob$layout[idx, c("t", "b")] <- grob$layout[idx, c("t", "b")] - 10
+
+# Move panel strips left 
+idx <- which(grob$layout$name %in% paste0("strip-r-", 3:7))
+grob$layout[idx, "r"] <- grob$layout[idx, "r"] - 8
+
+# Plot
+ggsave(here("fig/induction_growth_OD_colonies.png"),grob,
        width = 8, height = 6)
-p  
+
+grid.draw(grob)
 ```
 
 
