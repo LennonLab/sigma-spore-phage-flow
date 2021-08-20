@@ -60,10 +60,10 @@ Remove blanks
    
    #print pretty table
    d.test.cells %>% 
-      mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-      mutate(pop = case_when(pop=="spore.ml" ~ "spores",
-                             pop=="veg.ml" ~"vegetative",
-                             pop=="cells.ml" ~ "total cells")) %>%
+      mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+      mutate(pop = case_when(pop=="spore.ml" ~ "Spores",
+                             pop=="veg.ml" ~"Vegetative",
+                             pop=="cells.ml" ~ "Total Cells")) %>%
       mutate(group1 = "+ IPTG") %>% 
       mutate(group2 = "- IPTG") %>% 
       select( `induced gene` = strain, 
@@ -79,9 +79,9 @@ Remove blanks
 
 | induced gene | group1  | group2  | Test statistic |  df   |  P value  |
 |:------------:|:-------:|:-------:|:--------------:|:-----:|:---------:|
-| empty vector | \+ IPTG | \- IPTG |     0.3105     | 13.64 |  0.7609   |
-| empty vector | \+ IPTG | \- IPTG |     0.705      | 13.72 |  0.4926   |
-| empty vector | \+ IPTG | \- IPTG |     0.8578     | 13.74 |  0.4057   |
+| Empty Vector | \+ IPTG | \- IPTG |     0.3105     | 13.64 |  0.7609   |
+| Empty Vector | \+ IPTG | \- IPTG |     0.705      | 13.72 |  0.4926   |
+| Empty Vector | \+ IPTG | \- IPTG |     0.8578     | 13.74 |  0.4057   |
 |     sigF     | \+ IPTG | \- IPTG |     -4.08      | 7.022 | 0.004661  |
 |     sigF     | \+ IPTG | \- IPTG |     0.8282     | 7.947 |  0.4318   |
 |     sigF     | \+ IPTG | \- IPTG |     -1.415     | 13.47 |  0.1798   |
@@ -178,10 +178,10 @@ Table continues below
    
      # print pretty table
    d.test.diffs %>% 
-      mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-       mutate(pop = case_when(pop=="spore.ml" ~ "spores",
-                              pop=="veg.ml" ~"vegetative",
-                              pop=="cells.ml" ~ "total cells")) %>%
+      mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+       mutate(pop = case_when(pop=="spore.ml" ~ "Spores",
+                              pop=="veg.ml" ~"Vegetative",
+                              pop=="cells.ml" ~ "Total Cells")) %>%
       mutate(estimate.ci = paste(scientific(estimate),"±",scientific(abs(estimate-conf.low)))) %>% 
     select( `induced gene` = strain, 
             `cell population` = pop,
@@ -191,35 +191,35 @@ Table continues below
             ` ` = p.lab,
             `mean±CI (noIPTG - IPTG)` = estimate.ci,
             method, `Alternative hypothesis` = alternative) %>% 
-         mutate(`induced gene` = fct_relevel(`induced gene`,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
-      mutate(`cell population` = fct_relevel(`cell population`, "spores","vegetative", "total cells")) %>%
+         mutate(`induced gene` = fct_relevel(`induced gene`,"Empty Vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+      mutate(`cell population` = fct_relevel(`cell population`, "Spores","Vegetative", "Total Cells")) %>%
       arrange(`cell population`, `induced gene`) %>% 
    pander()
 ```
 
 | induced gene | cell population | Test statistic | df  |  P value  | adjusted P |
 |:------------:|:---------------:|:--------------:|:---:|:---------:|:----------:|
-| empty vector |     spores      |     0.3994     |  7  |  0.7015   |   0.7015   |
-|     sigF     |     spores      |     -4.05      |  7  |  0.00487  |  0.01136   |
-|     sigG     |     spores      |     -5.491     |  7  | 0.0009151 |  0.005003  |
-|     SP10     |     spores      |     -4.402     |  7  | 0.003148  |  0.009444  |
-|     Goe3     |     spores      |     -5.453     |  7  | 0.000953  |  0.005003  |
-|   ELDg168    |     spores      |     -4.114     |  9  | 0.002622  |  0.009444  |
-|   ELDg169    |     spores      |     -13.81     |  9  | 2.302e-07 | 4.834e-06  |
-| empty vector |   vegetative    |     1.115      |  7  |  0.3015   |   0.3333   |
-|     sigF     |   vegetative    |     0.7883     |  7  |  0.4564   |   0.4792   |
-|     sigG     |   vegetative    |     -2.341     |  7  |  0.05178  |  0.09062   |
-|     SP10     |   vegetative    |     -2.981     |  7  |  0.0205   |  0.03913   |
-|     Goe3     |   vegetative    |     1.569      |  7  |  0.1607   |   0.2249   |
-|   ELDg168    |   vegetative    |     1.768      |  9  |  0.1108   |   0.179    |
-|   ELDg169    |   vegetative    |     1.368      |  9  |  0.2045   |   0.2526   |
-| empty vector |   total cells   |      1.49      |  7  |  0.1797   |   0.2359   |
-|     sigF     |   total cells   |     -1.191     |  7  |  0.2723   |   0.3177   |
-|     sigG     |   total cells   |     -4.109     |  7  | 0.004523  |  0.01136   |
-|     SP10     |   total cells   |     -4.522     |  7  | 0.002727  |  0.009444  |
-|     Goe3     |   total cells   |     -1.599     |  7  |  0.1539   |   0.2249   |
-|   ELDg168    |   total cells   |     -2.896     |  9  |  0.0177   |  0.03718   |
-|   ELDg169    |   total cells   |     -8.405     |  9  | 1.488e-05 | 0.0001563  |
+| Empty Vector |     Spores      |     0.3994     |  7  |  0.7015   |   0.7015   |
+|     sigF     |     Spores      |     -4.05      |  7  |  0.00487  |  0.01136   |
+|     sigG     |     Spores      |     -5.491     |  7  | 0.0009151 |  0.005003  |
+|     SP10     |     Spores      |     -4.402     |  7  | 0.003148  |  0.009444  |
+|     Goe3     |     Spores      |     -5.453     |  7  | 0.000953  |  0.005003  |
+|   ELDg168    |     Spores      |     -4.114     |  9  | 0.002622  |  0.009444  |
+|   ELDg169    |     Spores      |     -13.81     |  9  | 2.302e-07 | 4.834e-06  |
+| Empty Vector |   Vegetative    |     1.115      |  7  |  0.3015   |   0.3333   |
+|     sigF     |   Vegetative    |     0.7883     |  7  |  0.4564   |   0.4792   |
+|     sigG     |   Vegetative    |     -2.341     |  7  |  0.05178  |  0.09062   |
+|     SP10     |   Vegetative    |     -2.981     |  7  |  0.0205   |  0.03913   |
+|     Goe3     |   Vegetative    |     1.569      |  7  |  0.1607   |   0.2249   |
+|   ELDg168    |   Vegetative    |     1.768      |  9  |  0.1108   |   0.179    |
+|   ELDg169    |   Vegetative    |     1.368      |  9  |  0.2045   |   0.2526   |
+| Empty Vector |   Total Cells   |      1.49      |  7  |  0.1797   |   0.2359   |
+|     sigF     |   Total Cells   |     -1.191     |  7  |  0.2723   |   0.3177   |
+|     sigG     |   Total Cells   |     -4.109     |  7  | 0.004523  |  0.01136   |
+|     SP10     |   Total Cells   |     -4.522     |  7  | 0.002727  |  0.009444  |
+|     Goe3     |   Total Cells   |     -1.599     |  7  |  0.1539   |   0.2249   |
+|   ELDg168    |   Total Cells   |     -2.896     |  9  |  0.0177   |  0.03718   |
+|   ELDg169    |   Total Cells   |     -8.405     |  9  | 1.488e-05 | 0.0001563  |
 
 Table continues below
 
@@ -252,20 +252,20 @@ plot.p <-
 d.test.cells%>% 
    select(strain, pop, p.value, p.lab) %>% 
    
-   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+   mutate(strain = fct_relevel(strain,"Empty Vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
    
-      mutate(pop = if_else(pop=="spore.ml", "spores","vegetative")) %>%
-    mutate(pop = fct_relevel(pop,"spores", "vegetative")) %>% 
+      mutate(pop = if_else(pop=="spore.ml", "Spores","Vegetative")) %>%
+    mutate(pop = fct_relevel(pop,"Spores", "Vegetative")) %>% 
  
    
       # panel separation
-   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(pnl=case_when(strain == "Empty Vector" ~ "Neg. Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
-   mutate(y = if_else(pop=="vegetative", -9e7, 9e7)) %>% 
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host", "Neg. Ctrl")) %>%
+   mutate(y = if_else(pop=="Vegetative", -9e7, 9e7)) %>% 
    mutate(p.lab = str_replace(p.lab, "\\.", ""))
 ```
 
@@ -325,7 +325,7 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
    # print pretty table
    d.test %>%
       mutate(estimate.ci = paste(signif(estimate,3),"±",signif(abs(estimate-conf.low),3))) %>% 
-    mutate(group2 = "empty vector") %>% 
+    mutate(group2 = "Empty Vector") %>% 
       select( group1 = strain, group2,
             `Test statistic` = statistic,
             df = parameter, 
@@ -341,12 +341,12 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
 
 | group1  |    group2    | Test statistic |  df   |  P value  | adjusted P |        |
 |:-------:|:------------:|:--------------:|:-----:|:---------:|:----------:|--------|
-|  sigF   | empty vector |     6.432      | 8.199 | 0.0001818 | 0.0005453  | \*\*\* |
-|  sigG   | empty vector |     2.769      | 13.86 |  0.01519  |  0.02279   | \*     |
-| ELDg168 | empty vector |     2.097      | 15.12 |  0.05324  |  0.06389   | .      |
-| ELDg169 | empty vector |     7.802      | 7.003 | 0.0001067 | 0.0005453  | \*\*\* |
-|  Goe3   | empty vector |     4.387      | 8.864 | 0.001818  |  0.003635  | \*\*   |
-|  SP10   | empty vector |     0.4636     | 10.36 |  0.6525   |   0.6525   |        |
+|  sigF   | Empty Vector |     6.432      | 8.199 | 0.0001818 | 0.0005453  | \*\*\* |
+|  sigG   | Empty Vector |     2.769      | 13.86 |  0.01519  |  0.02279   | \*     |
+| ELDg168 | Empty Vector |     2.097      | 15.12 |  0.05324  |  0.06389   | .      |
+| ELDg169 | Empty Vector |     7.802      | 7.003 | 0.0001067 | 0.0005453  | \*\*\* |
+|  Goe3   | Empty Vector |     4.387      | 8.864 | 0.001818  |  0.003635  | \*\*   |
+|  SP10   | Empty Vector |     0.4636     | 10.36 |  0.6525   |   0.6525   |        |
 
 Table continues below
 

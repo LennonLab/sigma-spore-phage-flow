@@ -199,10 +199,10 @@ d.diff.cells <- d%>%
    
    #print pretty table
    d.test.cells %>% 
-      mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-      mutate(pop = case_when(pop=="spore.ml" ~ "spores",
-                             pop=="veg.ml" ~"vegetative",
-                             pop=="cells.ml" ~ "total cells")) %>%
+      mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+      mutate(pop = case_when(pop=="spore.ml" ~ "Spores",
+                             pop=="veg.ml" ~"Vegetative",
+                             pop=="cells.ml" ~ "Total Cells")) %>%
       mutate(group1 = "+ IPTG") %>% 
       mutate(group2 = "- IPTG") %>% 
       select( `induced gene` = strain, 
@@ -244,10 +244,10 @@ d.diff.cells <- d%>%
    
      # print pretty table
    d.test.diffs %>% 
-      mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-       mutate(pop = case_when(pop=="spore.ml" ~ "spores",
-                              pop=="veg.ml" ~"vegetative",
-                              pop=="cells.ml" ~ "total cells")) %>%
+      mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+       mutate(pop = case_when(pop=="spore.ml" ~ "Spores",
+                              pop=="veg.ml" ~"Vegetative",
+                              pop=="cells.ml" ~ "Total Cells")) %>%
       mutate(estimate.ci = paste(scientific(estimate),"±",scientific(abs(estimate-conf.low)))) %>% 
     select( `induced gene` = strain, 
             `cell population` = pop,
@@ -257,8 +257,8 @@ d.diff.cells <- d%>%
             ` ` = p.lab,
             `mean±CI (noIPTG - IPTG)` = estimate.ci,
             method, `Alternative hypothesis` = alternative) %>% 
-         mutate(`induced gene` = fct_relevel(`induced gene`,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
-      mutate(`cell population` = fct_relevel(`cell population`, "spores","vegetative", "total cells")) %>%
+         mutate(`induced gene` = fct_relevel(`induced gene`,"Empty Vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+      mutate(`cell population` = fct_relevel(`cell population`, "Spores","Vegetative", "Total Cells")) %>%
       arrange(`cell population`, `induced gene`) %>% 
    pander()
 ```
@@ -268,20 +268,20 @@ plot.p <-
 d.test.cells%>% 
    select(strain, pop, p.value, p.lab) %>% 
    
-   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+   mutate(strain = fct_relevel(strain,"Empty Vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
    
-      mutate(pop = if_else(pop=="spore.ml", "spores","vegetative")) %>%
-    mutate(pop = fct_relevel(pop,"spores", "vegetative")) %>% 
+      mutate(pop = if_else(pop=="spore.ml", "Spores","Vegetative")) %>%
+    mutate(pop = fct_relevel(pop,"Spores", "Vegetative")) %>% 
  
    
       # panel separation
-   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(pnl=case_when(strain == "Empty Vector" ~ "Neg. Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
-   mutate(y = if_else(pop=="vegetative", -9e7, 9e7)) %>% 
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host", "Neg. Ctrl")) %>%
+   mutate(y = if_else(pop=="Vegetative", -9e7, 9e7)) %>% 
    mutate(p.lab = str_replace(p.lab, "\\.", ""))
 
 ```
@@ -297,8 +297,8 @@ d%>%
    filter(!outlier)%>%
    #reduce table
    select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
-   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+   mutate(strain = fct_relevel(strain,"Empty Vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
 
    # average technical replicates
    group_by(strain, treat,colony,exp)%>%
@@ -307,20 +307,20 @@ d%>%
    # long format
    pivot_longer(cols = c("spore.ml", "veg.ml"),
                 names_to = "pop", values_to = "cell.ml") %>% 
-   mutate(pop = if_else(pop=="spore.ml", "spores","vegetative")) %>%
-    mutate(pop = fct_relevel(pop,"spores", "vegetative")) %>% 
+   mutate(pop = if_else(pop=="spore.ml", "Spores","Vegetative")) %>%
+    mutate(pop = fct_relevel(pop,"Spores", "Vegetative")) %>% 
  
    
       # panel separation
-   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(pnl=case_when(strain == "Empty Vector" ~ "Neg. Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host", "Neg. Ctrl")) %>%
    
    mutate(`IPTG induction` = ifelse(treat=="noIPTG", "-", "+")) %>% 
    
-   mutate(cell.ml = if_else(pop=="vegetative", -cell.ml, cell.ml))
+   mutate(cell.ml = if_else(pop=="Vegetative", -cell.ml, cell.ml))
 
 
 
@@ -346,7 +346,7 @@ p <-
 
    facet_wrap(pnl~strain, nrow = 2)+
 
-   ylab("cells/ml")+
+   ylab(expression("Cells ml"^"-1"))+
    scale_y_continuous(breaks = axis.breaks, labels = abs(axis.breaks),
                       limits = c(-1.1e8,1.1e8))+
    scale_fill_viridis_d(direction = 1)+
@@ -374,41 +374,42 @@ d.diff.cells%>%
    pivot_longer(cols = contains("IPTG"), names_to = "treat", values_to = "cell.ml") %>% 
 
    # panel separation
-   mutate(strain = str_replace(strain, "pDR110","empty vector" )) %>% 
-   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(strain = str_replace(strain, "pDR110","Empty Vector" )) %>% 
+   mutate(pnl=case_when(strain == "Empty Vector" ~ "Neg. Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl")) %>%
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host", "Neg. Ctrl")) %>%
    
    mutate(`IPTG induction` = ifelse(treat=="noIPTG", "-", "+")) %>% 
    
-   mutate(population = case_when(pop=="spore.ml" ~ "spores",
-                       pop=="veg.ml" ~"vegetative",
-                       pop=="cells.ml" ~ "total cells")) %>% 
-   mutate(population = fct_relevel(population, "total cells", "spores", "vegetative"))
+   mutate(Population = case_when(pop=="spore.ml" ~ "Spores",
+                       pop=="veg.ml" ~"Vegetative",
+                       pop=="cells.ml" ~ "Total Cells")) %>% 
+   mutate(Population = fct_relevel(Population, "Total Cells", "Spores", "Vegetative"))
 
 
 
 p <-
    d.plot.diff %>% 
    # average biological replicates
-   group_by(pnl, strain, `IPTG induction`, population)%>%
+   group_by(pnl, strain, `IPTG induction`, Population)%>%
    summarise(m = mean(cell.ml), n = n(), v = sd(cell.ml)/sqrt(n),
              .groups = "drop")%>%
 
    #plot
-   ggplot(aes(x=`IPTG induction`, y=m, color = population))+
-   geom_line(data = d.plot.diff, aes(y=cell.ml, group = interaction(exp,colony,population)), alpha = 0.2, size = 0.5)+
-   geom_line(aes(group = population))+
+   ggplot(aes(x=`IPTG induction`, y=m, color = Population))+
+   geom_line(data = d.plot.diff, aes(y=cell.ml, group = interaction(exp,colony,Population)), alpha = 0.2, size = 0.5)+
+   geom_line(aes(group = Population))+
 
-   geom_line(aes(group = population), size =1)+
+   geom_line(aes(group = Population), size =1)+
    geom_pointrange(aes(ymin = m-v, ymax = m+v))+#shape = 21,fill = "white")+
 
    facet_wrap(pnl~strain, nrow = 2)+
 
-   ylab("cells/ml")+
-  scale_y_log10()+
+   ylab(expression("Cells ml"^"-1"))+
+  scale_y_log10( labels = trans_format("log10", math_format(10^.x)))+
+   annotation_logticks(colour = "grey", sides = "l")+
    scale_fill_viridis_d(direction = 1)+
    scale_colour_viridis_d(direction = 1)+
    theme_classic(base_size = 14)+
@@ -580,7 +581,7 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
    # print pretty table
    d.test %>%
       mutate(estimate.ci = paste(signif(estimate,3),"±",signif(abs(estimate-conf.low),3))) %>% 
-    mutate(group2 = "empty vector") %>% 
+    mutate(group2 = "Empty Vector") %>% 
       select( group1 = strain, group2,
             `Test statistic` = statistic,
             df = parameter, 
@@ -644,8 +645,8 @@ d%>%
    filter(!outlier)%>%
    #reduce table
    select("strain","treat", "colony","rep","spore.ml","veg.ml","exp")%>%
-   mutate(strain = str_replace(strain, "pDR110", "empty vector")) %>% 
-   mutate(strain = fct_relevel(strain,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+   mutate(strain = str_replace(strain, "pDR110", "Empty Vector")) %>% 
+   mutate(strain = fct_relevel(strain,"Empty Vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
    # calc percent spore
    mutate(perc.spore=spore.ml/(veg.ml+spore.ml))%>%
    
@@ -654,11 +655,11 @@ d%>%
    summarise(perc.spore=mean(perc.spore)) %>% 
    
       # panel separation
-   mutate(pnl=case_when(strain == "empty vector" ~ "neg. ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(pnl=case_when(strain == "Empty Vector" ~ "Neg. Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg. ctrl"))
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host", "Neg. Ctrl"))
 
 
 
@@ -711,11 +712,11 @@ d.test.plot <-
    d.test %>% 
    mutate(p.lab = str_replace(p.lab, "\\.", "")) %>% 
    # panel separation
-   mutate(pnl=case_when(#strain == "empty vector" ~ "neg. ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(pnl=case_when(#strain == "Empty Vector" ~ "Neg. Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host"))
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host"))
 
 d.plot.log <- d.plot %>% 
    pivot_wider(names_from = treat, values_from = perc.spore)%>%
@@ -745,8 +746,8 @@ p <- d.plot.log %>%
    
    facet_grid(.~pnl, scales = "free_x", space = "free_x")+
 
-   ylab("spore yield")+
-   xlab("induced sigma factor")+
+   ylab("Spore Yield")+
+   xlab("Induced Sigma Factor")+
    scale_y_continuous(labels = scales::percent, trans = "log10")+
    annotation_logticks(sides = "l", colour = "grey")+
    coord_cartesian(ylim = c(5e-3,NA))+
@@ -780,11 +781,11 @@ d%>%
    ungroup()%>%
    mutate(exp=as_factor(exp))%>%
         # panel separation
-   mutate(pnl=case_when(strain == "pDR110" ~ "neg.ctrl",
-                        strain %in% c("sigF","sigG") ~ "host",
-                        TRUE ~ "phage") %>% 
+   mutate(pnl=case_when(strain == "pDR110" ~ "Neg.Ctrl",
+                        strain %in% c("sigF","sigG") ~ "Host",
+                        TRUE ~ "Phage") %>% 
              as_factor()) %>% 
-   mutate(pnl = fct_relevel(pnl,"phage", "host", "neg.ctrl")) %>% 
+   mutate(pnl = fct_relevel(pnl,"Phage", "Host", "Neg.Ctrl")) %>% 
    
    ggplot(aes(x=strain, y=induction.ratio.log))+
    geom_hline(yintercept = 1)+
