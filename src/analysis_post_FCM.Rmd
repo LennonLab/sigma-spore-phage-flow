@@ -167,7 +167,7 @@ d.diff.cells <- d%>%
    summarise(quant = mean(quant) )%>%
    pivot_wider(names_from = "treat", values_from = "quant") %>% 
   ungroup() %>% 
-     mutate(diff = noIPTG - IPTG)
+     mutate(diff = IPTG - noIPTG)
 
 ```
 
@@ -257,6 +257,9 @@ d.diff.cells <- d%>%
             ` ` = p.lab,
             `mean±CI (noIPTG - IPTG)` = estimate.ci,
             method, `Alternative hypothesis` = alternative) %>% 
+         mutate(`induced gene` = fct_relevel(`induced gene`,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+      mutate(`cell population` = fct_relevel(`cell population`, "spores","vegetative", "total cells")) %>%
+      arrange(`cell population`, `induced gene`) %>% 
    pander()
 ```
 

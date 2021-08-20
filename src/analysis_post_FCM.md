@@ -191,58 +191,61 @@ Table continues below
             ` ` = p.lab,
             `mean±CI (noIPTG - IPTG)` = estimate.ci,
             method, `Alternative hypothesis` = alternative) %>% 
+         mutate(`induced gene` = fct_relevel(`induced gene`,"empty vector","sigF", "sigG","SP10", "Goe3","ELDg168", "ELDg169"))%>%
+      mutate(`cell population` = fct_relevel(`cell population`, "spores","vegetative", "total cells")) %>%
+      arrange(`cell population`, `induced gene`) %>% 
    pander()
 ```
 
 | induced gene | cell population | Test statistic | df  |  P value  | adjusted P |
 |:------------:|:---------------:|:--------------:|:---:|:---------:|:----------:|
-|   ELDg168    |     spores      |     4.114      |  9  | 0.002622  |  0.009444  |
-|   ELDg168    |   vegetative    |     -1.768     |  9  |  0.1108   |   0.179    |
-|   ELDg168    |   total cells   |     2.896      |  9  |  0.0177   |  0.03718   |
-|   ELDg169    |     spores      |     13.81      |  9  | 2.302e-07 | 4.834e-06  |
-|   ELDg169    |   vegetative    |     -1.368     |  9  |  0.2045   |   0.2526   |
-|   ELDg169    |   total cells   |     8.405      |  9  | 1.488e-05 | 0.0001563  |
-| empty vector |     spores      |    -0.3994     |  7  |  0.7015   |   0.7015   |
-| empty vector |   vegetative    |     -1.115     |  7  |  0.3015   |   0.3333   |
-| empty vector |   total cells   |     -1.49      |  7  |  0.1797   |   0.2359   |
-|     sigF     |     spores      |      4.05      |  7  |  0.00487  |  0.01136   |
-|     sigF     |   vegetative    |    -0.7883     |  7  |  0.4564   |   0.4792   |
-|     sigF     |   total cells   |     1.191      |  7  |  0.2723   |   0.3177   |
-|     sigG     |     spores      |     5.491      |  7  | 0.0009151 |  0.005003  |
-|     sigG     |   vegetative    |     2.341      |  7  |  0.05178  |  0.09062   |
-|     sigG     |   total cells   |     4.109      |  7  | 0.004523  |  0.01136   |
-|     SP10     |     spores      |     4.402      |  7  | 0.003148  |  0.009444  |
-|     SP10     |   vegetative    |     2.981      |  7  |  0.0205   |  0.03913   |
-|     SP10     |   total cells   |     4.522      |  7  | 0.002727  |  0.009444  |
-|     Goe3     |     spores      |     5.453      |  7  | 0.000953  |  0.005003  |
-|     Goe3     |   vegetative    |     -1.569     |  7  |  0.1607   |   0.2249   |
-|     Goe3     |   total cells   |     1.599      |  7  |  0.1539   |   0.2249   |
+| empty vector |     spores      |     0.3994     |  7  |  0.7015   |   0.7015   |
+|     sigF     |     spores      |     -4.05      |  7  |  0.00487  |  0.01136   |
+|     sigG     |     spores      |     -5.491     |  7  | 0.0009151 |  0.005003  |
+|     SP10     |     spores      |     -4.402     |  7  | 0.003148  |  0.009444  |
+|     Goe3     |     spores      |     -5.453     |  7  | 0.000953  |  0.005003  |
+|   ELDg168    |     spores      |     -4.114     |  9  | 0.002622  |  0.009444  |
+|   ELDg169    |     spores      |     -13.81     |  9  | 2.302e-07 | 4.834e-06  |
+| empty vector |   vegetative    |     1.115      |  7  |  0.3015   |   0.3333   |
+|     sigF     |   vegetative    |     0.7883     |  7  |  0.4564   |   0.4792   |
+|     sigG     |   vegetative    |     -2.341     |  7  |  0.05178  |  0.09062   |
+|     SP10     |   vegetative    |     -2.981     |  7  |  0.0205   |  0.03913   |
+|     Goe3     |   vegetative    |     1.569      |  7  |  0.1607   |   0.2249   |
+|   ELDg168    |   vegetative    |     1.768      |  9  |  0.1108   |   0.179    |
+|   ELDg169    |   vegetative    |     1.368      |  9  |  0.2045   |   0.2526   |
+| empty vector |   total cells   |      1.49      |  7  |  0.1797   |   0.2359   |
+|     sigF     |   total cells   |     -1.191     |  7  |  0.2723   |   0.3177   |
+|     sigG     |   total cells   |     -4.109     |  7  | 0.004523  |  0.01136   |
+|     SP10     |   total cells   |     -4.522     |  7  | 0.002727  |  0.009444  |
+|     Goe3     |   total cells   |     -1.599     |  7  |  0.1539   |   0.2249   |
+|   ELDg168    |   total cells   |     -2.896     |  9  |  0.0177   |  0.03718   |
+|   ELDg169    |   total cells   |     -8.405     |  9  | 1.488e-05 | 0.0001563  |
 
 Table continues below
 
 |        | mean±CI (noIPTG - IPTG) |      method       | Alternative hypothesis |
 |--------|:-----------------------:|:-----------------:|:----------------------:|
-| \*\*   |   3.58e+07 ± 1.97e+07   | One Sample t-test |       two.sided        |
-|        |  -1.76e+07 ± 2.25e+07   | One Sample t-test |       two.sided        |
-| \*     |   1.82e+07 ± 1.42e+07   | One Sample t-test |       two.sided        |
-| \*\*\* |   8.80e+07 ± 1.44e+07   | One Sample t-test |       two.sided        |
-|        |  -9.13e+06 ± 1.51e+07   | One Sample t-test |       two.sided        |
-| \*\*\* |   7.89e+07 ± 2.12e+07   | One Sample t-test |       two.sided        |
-|        |  -3.37e+06 ± 1.99e+07   | One Sample t-test |       two.sided        |
-|        |  -1.10e+07 ± 2.33e+07   | One Sample t-test |       two.sided        |
-|        |  -1.44e+07 ± 2.28e+07   | One Sample t-test |       two.sided        |
-| \*     |   6.62e+07 ± 3.86e+07   | One Sample t-test |       two.sided        |
-|        |  -2.09e+07 ± 6.28e+07   | One Sample t-test |       two.sided        |
-|        |   4.52e+07 ± 8.97e+07   | One Sample t-test |       two.sided        |
-| \*\*   |   6.28e+07 ± 2.70e+07   | One Sample t-test |       two.sided        |
-| .      |   2.51e+07 ± 2.53e+07   | One Sample t-test |       two.sided        |
-| \*     |   8.79e+07 ± 5.06e+07   | One Sample t-test |       two.sided        |
-| \*\*   |   3.18e+07 ± 1.71e+07   | One Sample t-test |       two.sided        |
-| \*     |   1.47e+07 ± 1.17e+07   | One Sample t-test |       two.sided        |
-| \*\*   |   4.66e+07 ± 2.44e+07   | One Sample t-test |       two.sided        |
-| \*\*   |   5.14e+07 ± 2.23e+07   | One Sample t-test |       two.sided        |
-|        |  -2.35e+07 ± 3.54e+07   | One Sample t-test |       two.sided        |
-|        |   2.79e+07 ± 4.12e+07   | One Sample t-test |       two.sided        |
+|        |   3.37e+06 ± 1.99e+07   | One Sample t-test |       two.sided        |
+| \*     |  -6.62e+07 ± 3.86e+07   | One Sample t-test |       two.sided        |
+| \*\*   |  -6.28e+07 ± 2.70e+07   | One Sample t-test |       two.sided        |
+| \*\*   |  -3.18e+07 ± 1.71e+07   | One Sample t-test |       two.sided        |
+| \*\*   |  -5.14e+07 ± 2.23e+07   | One Sample t-test |       two.sided        |
+| \*\*   |  -3.58e+07 ± 1.97e+07   | One Sample t-test |       two.sided        |
+| \*\*\* |  -8.80e+07 ± 1.44e+07   | One Sample t-test |       two.sided        |
+|        |   1.10e+07 ± 2.33e+07   | One Sample t-test |       two.sided        |
+|        |   2.09e+07 ± 6.28e+07   | One Sample t-test |       two.sided        |
+| .      |  -2.51e+07 ± 2.53e+07   | One Sample t-test |       two.sided        |
+| \*     |  -1.47e+07 ± 1.17e+07   | One Sample t-test |       two.sided        |
+|        |   2.35e+07 ± 3.54e+07   | One Sample t-test |       two.sided        |
+|        |   1.76e+07 ± 2.25e+07   | One Sample t-test |       two.sided        |
+|        |   9.13e+06 ± 1.51e+07   | One Sample t-test |       two.sided        |
+|        |   1.44e+07 ± 2.28e+07   | One Sample t-test |       two.sided        |
+|        |  -4.52e+07 ± 8.97e+07   | One Sample t-test |       two.sided        |
+| \*     |  -8.79e+07 ± 5.06e+07   | One Sample t-test |       two.sided        |
+| \*\*   |  -4.66e+07 ± 2.44e+07   | One Sample t-test |       two.sided        |
+|        |  -2.79e+07 ± 4.12e+07   | One Sample t-test |       two.sided        |
+| \*     |  -1.82e+07 ± 1.42e+07   | One Sample t-test |       two.sided        |
+| \*\*\* |  -7.89e+07 ± 2.12e+07   | One Sample t-test |       two.sided        |
 
 ``` r
 plot.p <- 
