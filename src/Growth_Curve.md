@@ -168,7 +168,7 @@ p <- sum_colonies %>%
   ylab("OD600")+
   xlab("Time (hr)")+
   scale_x_continuous(breaks = c(0,12,24))+
-  labs(caption = "mean±SE (n=3)")+
+  # labs(caption = "mean±SE (n=3)")+
 
   theme_classic(base_size = 12)+
   panel_border(color = "black")+
@@ -219,6 +219,8 @@ grid.draw(grob)
 ```
 
 ![](Growth_Curve_files/figure-gfm/empty%20panels-1.png)<!-- -->
+
+mean±SE (n=3)
 
 ## OD at innoculation
 

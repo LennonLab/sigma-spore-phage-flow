@@ -323,15 +323,19 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
       relocate(strain, p.value, adj.p, p.lab)
    
    # print pretty table
-   d.test %>% 
+   d.test %>%
+      mutate(estimate.ci = paste(signif(estimate,3),"±",signif(abs(estimate-conf.low),3))) %>% 
     mutate(group2 = "empty vector") %>% 
-    select( group1 = strain, group2,
+      select( group1 = strain, group2,
             `Test statistic` = statistic,
             df = parameter, 
             `P value` = p.value, `adjusted P` = adj.p,
             ` ` = p.lab,
-            mean_group1 = estimate1, mean_group2 = estimate2,
+            mean_group1 = estimate2, mean_group2 = estimate1,
+            `difference in means±CI` = estimate.ci,
             method, `Alternative hypothesis` = alternative) %>% 
+      mutate(group1 = fct_relevel(group1,"sigF", "sigG","ELDg168","ELDg169","Goe3","SP10"))%>%
+      arrange(group1) %>% 
    pander()
 ```
 
@@ -339,21 +343,32 @@ summary(aov(induction.ratio~strain+colony+exp, d.sum))
 |:-------:|:------------:|:--------------:|:-----:|:---------:|:----------:|--------|
 |  sigF   | empty vector |     6.432      | 8.199 | 0.0001818 | 0.0005453  | \*\*\* |
 |  sigG   | empty vector |     2.769      | 13.86 |  0.01519  |  0.02279   | \*     |
-|  Goe3   | empty vector |     4.387      | 8.864 | 0.001818  |  0.003635  | \*\*   |
 | ELDg168 | empty vector |     2.097      | 15.12 |  0.05324  |  0.06389   | .      |
-|  SP10   | empty vector |     0.4636     | 10.36 |  0.6525   |   0.6525   |        |
 | ELDg169 | empty vector |     7.802      | 7.003 | 0.0001067 | 0.0005453  | \*\*\* |
+|  Goe3   | empty vector |     4.387      | 8.864 | 0.001818  |  0.003635  | \*\*   |
+|  SP10   | empty vector |     0.4636     | 10.36 |  0.6525   |   0.6525   |        |
 
 Table continues below
 
-| mean\_group1 | mean\_group2 |         method          | Alternative hypothesis |
-|:------------:|:------------:|:-----------------------:|:----------------------:|
-|    1.024     |    0.1585    | Welch Two Sample t-test |       two.sided        |
-|    1.024     |    0.4906    | Welch Two Sample t-test |       two.sided        |
-|    1.024     |    0.4203    | Welch Two Sample t-test |       two.sided        |
-|    1.024     |    0.6611    | Welch Two Sample t-test |       two.sided        |
-|    1.024     |    0.9567    | Welch Two Sample t-test |       two.sided        |
-|    1.024     |   0.01658    | Welch Two Sample t-test |       two.sided        |
+| mean\_group1 | mean\_group2 | difference in means±CI |         method          |
+|:------------:|:------------:|:----------------------:|:-----------------------:|
+|    0.1585    |    1.024     |     0.865 ± 0.309      | Welch Two Sample t-test |
+|    0.4906    |    1.024     |     0.533 ± 0.413      | Welch Two Sample t-test |
+|    0.6611    |    1.024     |     0.363 ± 0.368      | Welch Two Sample t-test |
+|   0.01658    |    1.024     |      1.01 ± 0.305      | Welch Two Sample t-test |
+|    0.4203    |    1.024     |     0.603 ± 0.312      | Welch Two Sample t-test |
+|    0.9567    |    1.024     |     0.067 ± 0.321      | Welch Two Sample t-test |
+
+Table continues below
+
+| Alternative hypothesis |
+|:----------------------:|
+|       two.sided        |
+|       two.sided        |
+|       two.sided        |
+|       two.sided        |
+|       two.sided        |
+|       two.sided        |
 
     ## `summarise()` has grouped output by 'strain', 'treat', 'colony'. You can override using the `.groups` argument.
 
