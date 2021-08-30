@@ -1,4 +1,4 @@
-# spore-phage-sigma-flow
+# sigma-spore-phage-flow
 Analysis of flow cytometry data relating to sporulation with phage sigma factors
 
 The Pipeline to analyze flow cytometry data of SYBR green stained cultures of Bacillus subtilis is modified from the work of:
