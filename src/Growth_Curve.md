@@ -111,7 +111,7 @@ Plot by strain, average over colonies.
 sum_colonies <- 
   d %>% 
   group_by(Time, strain, treat, exp, colony) %>% 
-  summarise( n =n(), m = mean(OD600), v = sd(OD600)/n, .groups = "drop") %>% 
+  summarise( n =n(), m = mean(OD600), v = sd(OD600)/sqrt(n), .groups = "drop") %>% 
   mutate(col.id = paste(exp, strain, treat,colony), sep ="_") %>% 
   # arrang labels
   mutate(strain=str_replace(strain,"^g","ELDg"))%>%
@@ -240,3 +240,5 @@ d %>%
 ```
 
 ![](Growth_Curve_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+mean±SD (n=3)
