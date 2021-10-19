@@ -31,7 +31,7 @@ renv::restore
 learn more at: https://here.r-lib.org/
 
 
-3. Running the analysis
+3. Running the automatic gating ppipeline
 
 * from within Rstudio execute the src/quant-spore_veg.R code. Packages and functions used for this analysis are at src/FCM_functions.R.
 
@@ -49,6 +49,9 @@ for each group of replicates the pipeline should make 4 plots in figs/gate_plots
 
 The actual counts. along with pipeline values collected along the way, are saved to data/output as .csv files.
 
+4. Analysis of cell populations
+
+Analysis of treatment effect on sporulation is detailed in [*src/Growth_Curve.Rmd*](src/Growth_Curve.md), 
 
  
 
