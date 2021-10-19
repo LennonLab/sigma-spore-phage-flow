@@ -51,7 +51,11 @@ The actual counts. along with pipeline values collected along the way, are saved
 
 4. Analysis of cell populations
 
-Analysis of treatment effect on sporulation is detailed in [*src/Growth_Curve.Rmd*](src/Growth_Curve.md), 
+Analysis of treatment effect on sporulation is detailed in [*src/analysis_post_FCM.Rmd*](src/analysis_post_FCM.md)
+
+5. Growth curves of populations in sporulation assaya
+
+ [*src/Growth_Curve.Rmd*](src/Growth_Curve.md)
 
  
 
