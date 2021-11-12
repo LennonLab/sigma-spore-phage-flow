@@ -1,4 +1,4 @@
-# spore-phage-sigma-flow
+# sigma-spore-phage-flow
 Analysis of flow cytometry data relating to sporulation with phage sigma factors
 
 The Pipeline to analyze flow cytometry data of SYBR green stained cultures of Bacillus subtilis is modified from the work of:
@@ -31,7 +31,7 @@ renv::restore
 learn more at: https://here.r-lib.org/
 
 
-3. Running the analysis
+3. Running the automatic gating ppipeline
 
 * from within Rstudio execute the src/quant-spore_veg.R code. Packages and functions used for this analysis are at src/FCM_functions.R.
 
@@ -49,6 +49,13 @@ for each group of replicates the pipeline should make 4 plots in figs/gate_plots
 
 The actual counts. along with pipeline values collected along the way, are saved to data/output as .csv files.
 
+4. Analysis of cell populations
+
+Analysis of treatment effect on sporulation is detailed in [*src/analysis_post_FCM.Rmd*](src/analysis_post_FCM.md)
+
+5. Growth curves of populations in sporulation assaya
+
+ [*src/Growth_Curve.Rmd*](src/Growth_Curve.md)
 
  
 
