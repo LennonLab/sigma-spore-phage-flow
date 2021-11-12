@@ -171,7 +171,8 @@ for (current_folder in all.folders){
          scale_alpha_continuous(guide = FALSE) +
          facet_wrap(~well)+
          theme_cowplot()+
-         panel_border()
+         panel_border()+
+         ylab("asinh.SYBR-green.A")
       
       ggsave2(filename = paste0("scatterNoise_",fcsset[[i]]@description$`$SRC`,".png" ), 
               plot = complot,
@@ -229,18 +230,7 @@ for (current_folder in all.folders){
       
       clean.df$pop <- sapply(cluster.predict$classification,  function(x) {ifelse(x==pop.tbl$cluster[1], pop.tbl$pop[1],pop.tbl$pop[2])})
       
-      p <-       
-         ggplot(clean.df, aes(asinh.FSC.A, asinh.BL1.A)) +
-         geom_hex(aes(fill = pop), bins = 300) + # ,alpha=..ncount.. #order= ?
-         geom_density2d(color="black",  size = 0.1) +
-         theme_bw()+ 
-         geom_point(aes(centers.list.df[1, 1], centers.list.df[1, 2]), col = "blue", size = 1) +
-         geom_point(aes(centers.list.df[2, 1], centers.list.df[2, 2]), col = "blue", size = 1) +
-         facet_wrap(~well)
-
-         ggsave2(filename = paste0("cluster_",fcsset[[i]]@description$`$SRC`,".png" ), 
-              plot = p,
-              path = here("fig/gate_plots", day))
+      
       
       #### Get the quantities ####
       
@@ -267,6 +257,29 @@ for (current_folder in all.folders){
                 path = here("data/output/",day,paste0(fcsset[[i]]@description$`$SRC`,".csv")))
       
       print(paste("done",folder))
+      
+      # plot clusters
+      p <-       
+         ggplot(clean.df, aes(asinh.FSC.A, asinh.BL1.A)) +
+         geom_hex(aes(fill = pop), bins = 300) + # ,alpha=..ncount.. #order= ?
+         geom_density2d(color="black",  size = 0.1) +
+         geom_text(data = df.stats, aes(label = paste(veg, "VEG events")), 
+                   x=8, y = 2, hjust = 0, vjust = 0,
+                   color = scales::hue_pal()(2)[2], size=4)+
+         geom_text(data = df.stats, aes(label = paste(spore, "SPORE events")), 
+                   x=8, y = 0, hjust = 0, vjust = 0,
+                   color = scales::hue_pal()(2)[1], size=4)+
+         theme_bw()+ 
+         geom_point(aes(centers.list.df[1, 1], centers.list.df[1, 2]), col = "blue", size = 1) +
+         geom_point(aes(centers.list.df[2, 1], centers.list.df[2, 2]), col = "blue", size = 1) +
+         facet_wrap(~well)+
+         ylab("asinh.SYBR-green.A")+
+         ylim(0,15)+
+         xlim(8,15)
+      
+      ggsave2(filename = paste0("cluster_",fcsset[[i]]@description$`$SRC`,".png" ), 
+              plot = p,
+              path = here("fig/gate_plots", day))
    } #folder loop
    
 } # experimental batch loop     
