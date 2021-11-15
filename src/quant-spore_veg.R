@@ -127,8 +127,13 @@ for (current_folder in all.folders){
       noise.plot <-   
          ggcyto(fcsset,aes(asinh.FSC.A))+
          geom_density(fill="grey80")+
-         geom_vline(data = df.stats, aes(xintercept=noise.cutoff), color="red")+
-         facet_wrap(~well)+theme_cowplot()
+         geom_gate(noise)+
+         
+         facet_wrap(~well)+
+         theme_cowplot()+
+         panel_border(color = "black", size=.2)+
+         geom_stats(x=Inf, y=Inf, hjust=1.1, vjust=1.1)+
+         xlab("asinh.FSC.A")
       
       ggsave2(filename = paste0("noise_",fcsset[[i]]@description$`$SRC`,".pdf" ), 
               plot = noise.plot,
@@ -164,19 +169,20 @@ for (current_folder in all.folders){
          full_join(df.stats,.)
       
       complot <- 
-         ggplot(df.set, aes(asinh.SSC.A, asinh.BL1.A))+
-         geom_point(size=0.1, color="grey")+
-         geom_point(data=clean.df,size=0.1, color="blue")+
-         geom_density2d(col = "white",  size = 0.1, alpha = 0.5) +
-         scale_alpha_continuous(guide = FALSE) +
+         ggcyto(fcsset,aes(asinh.FSC.A, asinh.BL1.A))+
+         geom_hex(bins=300)+
+         geom_gate(noise)+
+         geom_stats(x=Inf, y=Inf, hjust=1, vjust=1)+
+         # geom_density2d(col = "black",  size = 0.1, alpha=0.5) +
          facet_wrap(~well)+
          theme_cowplot()+
          panel_border()+
-         ylab("asinh.SYBR-green.A")
+         ylab("asinh.SYBR-green.A")+
+         xlab("asinh.FSC.A")
       
       ggsave2(filename = paste0("scatterNoise_",fcsset[[i]]@description$`$SRC`,".png" ), 
               plot = complot,
-              path = here("fig/gate_plots/", day))
+              path = here("fig/gate_plots", day))
       #### predict centers of sub-populations ####
       
       # I pre-compiled a model for Bacillus subtilis TS01
@@ -256,17 +262,21 @@ for (current_folder in all.folders){
       write_csv(df.stats,
                 path = here("data/output/",day,paste0(fcsset[[i]]@description$`$SRC`,".csv")))
       
-      print(paste("done",folder))
+      
       
       # plot clusters
-      p <-       
+      p <-
          ggplot(clean.df, aes(asinh.FSC.A, asinh.BL1.A)) +
-         geom_hex(aes(fill = pop), bins = 300) + # ,alpha=..ncount.. #order= ?
+         geom_point(aes(color = pop), size=.1)+
+         # geom_hex(aes(fill = pop), bins = 300) + # ,alpha=..ncount.. #order= ?
          geom_density2d(color="black",  size = 0.1) +
-         geom_text(data = df.stats, aes(label = paste(veg, "VEG events")), 
-                   x=8, y = 2, hjust = 0, vjust = 0,
+         geom_text(data = df.stats, aes(label = paste0(veg+spore, " events")), 
+                   x=8, y = 3, hjust = 0, vjust = 0,
+                   size=4)+
+         geom_text(data = df.stats, aes(label = paste0(round(100*veg/(veg+spore),1), "% veg")), 
+                   x=8, y = 1.5, hjust = 0, vjust = 0,
                    color = scales::hue_pal()(2)[2], size=4)+
-         geom_text(data = df.stats, aes(label = paste(spore, "SPORE events")), 
+         geom_text(data = df.stats, aes(label = paste0(round(100*spore/(veg+spore),1), "% spore")), 
                    x=8, y = 0, hjust = 0, vjust = 0,
                    color = scales::hue_pal()(2)[1], size=4)+
          theme_bw()+ 
@@ -275,11 +285,14 @@ for (current_folder in all.folders){
          facet_wrap(~well)+
          ylab("asinh.SYBR-green.A")+
          ylim(0,15)+
-         xlim(8,15)
+         xlim(8,15)+
+         guides(color = guide_legend(override.aes = list(size=3)))
       
       ggsave2(filename = paste0("cluster_",fcsset[[i]]@description$`$SRC`,".png" ), 
               plot = p,
               path = here("fig/gate_plots", day))
+      
+      print(paste("done",folder))
    } #folder loop
    
 } # experimental batch loop     
