@@ -53,7 +53,7 @@ The actual counts. along with pipeline values collected along the way, are saved
 
 Analysis of treatment effect on sporulation is detailed in [*src/analysis_post_FCM.Rmd*](src/analysis_post_FCM.md)
 
-5. Growth curves of populations in sporulation assaya
+5. Growth curves of populations in sporulation assays  
 
  [*src/Growth_Curve.Rmd*](src/Growth_Curve.md)
 
