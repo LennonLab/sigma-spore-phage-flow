@@ -418,7 +418,8 @@ p <-
          legend.position = c(0.88, 0.2),
          legend.direction = "vertical")
 
-ggsave(here("fig/induction_response.png"),p,
+ggsave(here("fig/induction_response.png"),
+       plot_grid(p, labels = "b"),
        width = 6, height = 6)
 p +labs(caption = "mean±SE (n ≥ 8)" )
 

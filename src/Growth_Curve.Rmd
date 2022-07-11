@@ -215,7 +215,8 @@ idx <- which(grob$layout$name %in% paste0("strip-r-", 3:7))
 grob$layout[idx, "r"] <- grob$layout[idx, "r"] - 8
 
 # Plot
-ggsave(here("fig/induction_growth_OD_colonies.png"),grob,
+ggsave(here("fig/induction_growth_OD_colonies.png"),
+       plot_grid(grob, labels = "a"),
        width = 8, height = 6)
 
 grid.draw(grob)
