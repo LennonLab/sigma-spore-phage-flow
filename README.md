@@ -1,8 +1,7 @@
 # sigma-spore-phage-flow
 
 
-[![DOI](https://zenodo.org/badge/395378438.svg)](https://zenodo.org/badge/latestdoi/395378438)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6819190.svg)](https://doi.org/10.5281/zenodo.6819190)
 
 Analysis of flow cytometry data relating to sporulation with phage sigma factors
 
@@ -15,7 +14,7 @@ Quantification relies on sample volume measurement by NovCyte machine.
 
 
 To start analysis:
-1. place the flow data, exprtedfrom NovoExpress as fcs files, in the data/FCM folder.
+1. place the flow data, exported from NovoExpress as fcs files, in the data/FCM folder. (data is found in Zenodo link above)
 Experimental data (strain, treatment, sample dilution) are encoded in the names of folders and files.
 
 2. Setting up the environment
